@@ -1,4 +1,4 @@
-define([], function(){
+define(["ctype"], function(ctype){
 	return {
 		authEngine:function(){
 			this.templateParams=function(){
@@ -13,13 +13,18 @@ define([], function(){
 				inputDoms=[];
 				var fsDom=$('<fieldset data-role="controlgroup">');
 				for(var o=0;o<opt.length;o++){
-		            fsDom.append('<label for="x'+o+'"> '+opt[o]+' </label>');
-		            inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
-		            fsDom.append(inputDoms[o]);
+					var optContent=new ctype(opt[o])
+					var label=document.createElement("label")
+					label.htmlFor="x"+o;
+					optContent.putInto(label)
+					fsDom.append(label)
+					inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
+					fsDom.append(inputDoms[o]);
 				}
-		        $(optDiv).append(fsDom);
-		        $(optDiv).trigger("create");
-		        domReadyCallback();
+				$(optDiv).append(fsDom);
+				$(optDiv).trigger("create");
+				$(optDiv).append(fsDom).enhanceWithin()
+				domReadyCallback();
 			})
 
 			this.responseDom=function(){
@@ -32,6 +37,9 @@ define([], function(){
 				return null;
 			};
 			this.putAns=function(currAns){
+				// occassional error "Cannot read property '1' of undefined"
+				// when questions are clicked through too fast. 
+				// (try to call putAns from domReadyCallback?)
 				inputDoms[currAns].attr("checked","checked").checkboxradio("refresh");
 			}
 			this.grayOut=function(){
@@ -79,6 +87,8 @@ define([], function(){
 					.attr("x",barOffset)
 					.attr("y",function(d,i){return yScale(i);})
 					.html(function(d){return d;})
+
+					//MathJax.Hub.Typeset(x)
 				vAxis.data(opt)
 					.attr("x1",barOffset).attr("x2",barOffset)
 					.attr("stroke-width",axisStrokeWidth).attr("stroke","#333")
@@ -97,7 +107,7 @@ define([], function(){
 						return barScale(d);
 					})
 			}
-			this.responseInput=function(){
+			this.responseInput=function(opt$,optFrameResize){
 				var optDiv=document.createElement("div");
 				var inputDoms;
 				require([],function(){
@@ -105,13 +115,17 @@ define([], function(){
 					inputDoms=[];
 					var fsDom=$('<fieldset data-role="controlgroup">');
 					for(var o=0;o<opt.length;o++){
-			            fsDom.append('<label for="x'+o+'"> '+opt[o]+' </label>');
-			            inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
-			            fsDom.append(inputDoms[o]);
+						var optContent=new ctype(opt[o])
+						var label=document.createElement("label")
+						label.htmlFor="x"+o;
+						optContent.putInto(label)
+						fsDom.append(label)
+						inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
+						fsDom.append(inputDoms[o]);
 					}
-			        $(optDiv).append(fsDom);
-			        $(optDiv).trigger("create");
-			    })
+					opt$(optDiv).append(fsDom).enhanceWithin();
+					optFrameResize(optDiv);
+				})
 				return optDiv;
 			}
 			this.responseDom=function(){
