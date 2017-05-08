@@ -6,7 +6,7 @@ define(['ctype'], function(ctype){
 				//options is the name to be called (i.e. can be changed, with
 				//other sections to be changed accordingly also.)
 
-				return '{"url":["http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"]}'
+				return '{"imgUrl":"http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"}'
 			}
 		},
 		appEngine:function(params,domReadyCallback){
@@ -22,8 +22,8 @@ define(['ctype'], function(ctype){
 			var ansDataset = [];
 			var radius = 4;
 			//require d3js does nt work here
-			require([],function(){
-				url=params.url[0];
+			require(["d3js"],function(d3){
+				url=params.imgUrl;
 
 				ansSvg = d3.select(optDiv).append('svg')
 					.attr('height',aHeight).attr('width',aWidth)
@@ -104,7 +104,7 @@ define(['ctype'], function(ctype){
 			
 		},
 		webEngine:function(params,webEngineReadyCallback){
-			var url=params.url;
+			var url=params.imgUrl;
 			//console.log(opt);
 			// Array[4]
 			// 0: "T = mg"1: "T &gt mg"2: "T &lt mg"3: "not able to tell"length: 4__proto__: Array[0]
