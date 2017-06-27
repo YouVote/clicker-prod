@@ -133,6 +133,7 @@ define(["ctype"], function(ctype){
 			}
 			this.processResponse=function(studentUuid,ans){
 				data[ans]++;
+				console.log(data, ans);
 				update(data);
 			}
 		}
