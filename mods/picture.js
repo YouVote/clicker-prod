@@ -22,6 +22,12 @@ define(['ctype'], function(ctype){
 			var ansDataset = [];
 			var radius = 4;
 			//require d3js does nt work here
+
+			require.config({
+				paths:{
+					"d3js":"https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.0/d3.min",
+				},
+			});
 			require(["d3js"],function(d3){
 				url=params.imgUrl;
 
@@ -115,7 +121,7 @@ define(['ctype'], function(ctype){
 			var data = [];
 			var respDom=document.createElement("div");
 
-			require([`d3js`],function(d3) {
+			require(["d3js"],function(d3) {
 
 				d3Obj=d3.select(respDom).append(`svg`)
 					.attr('height',pHeight).attr('width',pWidth)
