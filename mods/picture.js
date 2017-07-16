@@ -9,7 +9,7 @@ define(['ctype'], function(ctype){
 				return '{"imgUrl":"http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"}'
 			}
 		},
-		appEngine:function(params,domReadyCallback){
+		appEngine:function(params){
 			// this section affects the user interface
 			var optDiv=document.createElement("div");
 			var inputDoms;
@@ -27,6 +27,21 @@ define(['ctype'], function(ctype){
 					"d3js":"https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.0/d3.min"
 				}
 			})
+			var domManager=new function(){
+				var domReady=false; var domReadyCallback=null;
+				this.domReady=function(){
+					if(domReadyCallback!=null){domReadyCallback();}
+					domReady=true;
+				}
+				this.onDomReady=function(callback){
+					if(domReady){callback();}
+					domReadyCallback=callback;
+				}
+			}();
+			this.onDomReady=function(callback){	
+				domManager.onDomReady(callback);
+			}
+
 			require(["d3js"],function(d3){
 				url=params.imgUrl;
 
@@ -34,14 +49,12 @@ define(['ctype'], function(ctype){
 					.attr('height',aHeight).attr('width',aWidth)
 					.style('background-color', 'white')
 
-
 				ansChart = ansSvg.append('g')
 						.append('image')
 						.attr('xlink:href', url)
 						.attr('width', '100%')
 						.attr('height', '100%')
 						.attr('preserveAspectRatio', 'none')
-
 
 				ansChart.on("click", function() {
 
@@ -78,12 +91,9 @@ define(['ctype'], function(ctype){
 					    .attr('r', radius)
 					    .attr("fill","blue")
 				}
-
-		        domReadyCallback();
 			})
 
-			this.responseDom=function(){
-				// console.log("1");
+			this.widBody=function(){
 				return optDiv;
 			}
 			this.getAns=function(){
@@ -104,15 +114,9 @@ define(['ctype'], function(ctype){
 				//be clicked after submitting
 				ansSvg.on("click",null);
 			}
-
-			
-			
 		},
-		webEngine:function(params,webEngineReadyCallback){
+		webEngine:function(params){
 			var url=params.imgUrl;
-			//console.log(opt);
-			// Array[4]
-			// 0: "T = mg"1: "T &gt mg"2: "T &lt mg"3: "not able to tell"length: 4__proto__: Array[0]
 
 			var d3Obj, chart;
 			var pHeight=600, pWidth=600;
@@ -126,19 +130,15 @@ define(['ctype'], function(ctype){
 					.attr('height',pHeight).attr('width',pWidth)
 
 				chart = d3Obj.append('g')
-						.append('image')
-						.attr('xlink:href', url)
-						.attr('width', '100%')
-						.attr('height', '100%')
-						.attr('preserveAspectRatio', 'none')
-
-
-				webEngineReadyCallback();
-
+					.append('image')
+					.attr('xlink:href', url)
+					.attr('width', '100%')
+					.attr('height', '100%')
+					.attr('preserveAspectRatio', 'none')
+				// webEngineReadyCallback();
 			});
 
 			function update(newData){
-
 			    d3Obj.selectAll("circle")  // For new circle, go through the update process
 				    .data(newData)
 				    .enter()
@@ -148,8 +148,6 @@ define(['ctype'], function(ctype){
 				    .attr('cy', function(d,i) {return pHeight-(d[0].y*(pHeight/300))})
 				    .attr('r', 8)
 				    .attr("fill","red")
-
-
 			}
 			this.responseInput=function(){
 				var optDiv=document.createElement("div");
@@ -162,7 +160,6 @@ define(['ctype'], function(ctype){
 				data.push(ans);
 				// console.log(data);
 				update(data);
-
 			}
 		}
 	}

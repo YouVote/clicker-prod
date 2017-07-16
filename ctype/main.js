@@ -27,15 +27,15 @@ define([],function(){
 		}
 	});
 
-	return function(a){
+	return function(contRep){
 		var data=null;
 		var params={};
-		if(typeof(a)=="string"){
-			data=a;
-		}else if(typeof(a)=="object"){
-			data=a.data;
-			if(a["mathjax"]!=undefined){
-				params.mathjax=a.mathjax;
+		if(typeof(contRep)=="string"){
+			data=contRep;
+		}else if(typeof(contRep)=="object"){
+			data=contRep.data;
+			if(contRep["mathjax"]!=undefined){
+				params.mathjax=contRep.mathjax;
 			}
 		}
 		this.putInto=function(div){
@@ -45,6 +45,11 @@ define([],function(){
 					mj.Hub.Queue(["Typeset",mj.Hub,div])
 				})
 			}
+		}
+		this.getDom=function(){
+			var div=document.createElement("div");
+			this.putInto(div);
+			return div;
 		}
 		this.data=data;
 	};

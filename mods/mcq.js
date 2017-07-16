@@ -1,4 +1,6 @@
 define(["ctype"], function(ctype){
+
+
 	return {
 		authEngine:function(){
 			var editDiv=document.createElement("div");
@@ -145,50 +147,86 @@ define(["ctype"], function(ctype){
 
 			}
 		},
-		appEngine:function(params,domReadyCallback){
-			var optDiv=document.createElement("div");
-			var inputDoms;
-			require([],function(){
-				opt=params.options;
-				inputDoms=[];
-				var fsDom=$('<fieldset data-role="controlgroup">');
-				for(var o=0;o<opt.length;o++){
-					var optContent=new ctype(opt[o])
-					var label=document.createElement("label")
-					label.htmlFor="x"+o;
-					optContent.putInto(label)
-					fsDom.append(label)
-					inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
-					fsDom.append(inputDoms[o]);
+		appEngine:function(params){
+			var appObj; var widBody=document.createElement("div");
+			var domManager=new function(){
+				var domReady=false; var domReadyCallback=null;
+				this.domReady=function(){
+					if(domReadyCallback!=null){domReadyCallback();}
+					domReady=true;
 				}
-				$(optDiv).append(fsDom);
-				$(optDiv).trigger("create");
-				$(optDiv).append(fsDom).enhanceWithin()
-				domReadyCallback();
+				this.onDomReady=function(callback){
+					if(domReady){callback();}
+					domReadyCallback=callback;
+				}
+			}();
+			require(["vue"],function(Vue){
+				var opt={
+					template:'<div ref="content"></div>',
+					props:["optData"],
+					mounted:function(){
+						var optContent=new ctype(this.optData);
+						optContent.putInto(this.$refs.content);
+					}
+				}
+				appObj=new Vue({
+					el:widBody,
+					template:'\
+					<div class="form-group btn-group-vertical btn-block justify-content-end">\
+					<label v-for="(opt,i) in options"class="form-check-label btn btn-default radio-inline"><input name="a" v-bind:value="i" type="radio" class="form-check-input" v-model="choice" v-bind:disabled="disabled"> \
+					<optfield :optData="opt"></optfield></label></div>\
+					',
+					data:{
+						options:params.options,
+						choice:null,
+						disabled:false
+					},
+					methods:{
+						putAns:function(newChoice){
+							this.choice=newChoice;
+						},
+						getAns:function(){
+							return this.choice;
+						},
+						grayOut:function(state){
+							if(state==undefined){state=true;}
+							this.disabled=state;
+						}
+					},
+					components:{
+						"optfield":opt
+					}
+				})
+				domManager.domReady();
 			})
-
-			this.responseDom=function(){
-				return optDiv;
+			this.onDomReady=function(callback){	
+				domManager.onDomReady(callback);
+			}
+			this.widHead=function(){
+				var widHead='\
+				<style>\
+					body{padding:5px;}\
+					label.radio-inline{text-align:left; padding-left:30px;white-space: normal;}\
+					div.optfield > input {width:100%;margin:-3px -2px -3px -2px;}\
+				</style>\
+				';
+				return widHead;
+			}
+			this.widBody=function(){
+				return widBody;
 			}
 			this.getAns=function(){
-				for(var i=0; i<inputDoms.length; i++){
-					if(inputDoms[i].prop('checked')){return i;}
-				}
-				return null;
+				return appObj.getAns();
 			};
 			this.putAns=function(currAns){
-				// occassional error "Cannot read property '1' of undefined"
-				// when questions are clicked through too fast. 
-				// (try to call putAns from domReadyCallback?)
-				inputDoms[currAns].attr("checked","checked").checkboxradio("refresh");
+				appObj.putAns(currAns);
 			}
 			this.grayOut=function(){
-				inputDoms.forEach(function(inputDom){
-					inputDom.prop('disabled',true).checkboxradio("refresh");
-				});
+				appObj.grayOut();
 			}
 		},
-		webEngine:function(params,webEngineReadyCallback){
+		webEngine:function(params){
+			var webObj=this;
 			var opt=params.options;
 			var d3Obj, label, vAxis, dataBar;
 			var yScale, barScale;
@@ -202,6 +240,7 @@ define(["ctype"], function(ctype){
 			var respDom=document.createElement("div");
 
 			require(["d3js"],function(d3) {
+
 				yScale=d3.scaleLinear()
 					.domain([-0.5,opt.length-0.5])
 					.range([0,pHeight]);
@@ -238,7 +277,6 @@ define(["ctype"], function(ctype){
 					.attr("y2",function(d,i){
 						return yScale(i+0.5-0.01*axisSpace);
 				 	})
-				webEngineReadyCallback();
 			});
 
 			function update(newData){
@@ -247,27 +285,59 @@ define(["ctype"], function(ctype){
 						return barScale(d);
 					})
 			}
-			this.responseInput=function(opt$,optFrameResize){
-				var optDiv=document.createElement("div");
-				var inputDoms;
-				require([],function(){
-					opt=params.options;
-					inputDoms=[];
-					var fsDom=$('<fieldset data-role="controlgroup">');
-					for(var o=0;o<opt.length;o++){
-						var optContent=new ctype(opt[o])
-						var label=document.createElement("label")
-						label.htmlFor="x"+o;
-						optContent.putInto(label)
-						fsDom.append(label)
-						inputDoms[o]=$('<input type="radio" name="a" id="x'+o+'">');
-						fsDom.append(inputDoms[o]);
+			var appObj; this.widBody=document.createElement("div");
+			require(["vue"],function(Vue){
+				var opt={
+					template:'<div ref="content"></div>',
+					props:["optData"],
+					mounted:function(){
+						var optContent=new ctype(this.optData);
+						optContent.putInto(this.$refs.content);
 					}
-					opt$(optDiv).append(fsDom).enhanceWithin();
-					optFrameResize(optDiv);
+				}
+				appObj=new Vue({
+					el:webObj.widBody,
+					template:'\
+					<div class="form-group btn-group-vertical btn-block justify-content-end">\
+					<label v-for="(opt,i) in options"class="form-check-label btn btn-default radio-inline"><input name="a" v-bind:value="i" type="radio" class="form-check-input" v-model="choice" v-bind:disabled="disabled"> \
+					<optfield :optData="opt"></optfield></label></div>\
+					',
+					data:{
+						options:params.options,
+						choice:null,
+						disabled:false
+					},
+					methods:{
+						putAns:function(newChoice){
+							this.choice=newChoice;
+						},
+						getAns:function(){
+							return this.choice;
+						},
+						grayOut:function(state){
+							if(state==undefined){state=true;}
+							this.disabled=state;
+						}
+					},
+					components:{
+						"optfield":opt
+					}
 				})
-				return optDiv;
+			})
+			this.widHead=function(){
+				var widHead='\
+				<style>\
+					label.radio-inline{text-align:left; padding-left:30px;white-space: normal;}\
+					div.optfield > input {width:100%;margin:-3px -2px -3px -2px;}\
+				</style>\
+				';
+				return widHead;
 			}
+
+			this.responseInput=function(){
+				return this.widBody;
+			}
+
 			this.responseDom=function(){
 				return respDom;
 			}
