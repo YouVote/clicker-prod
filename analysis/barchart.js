@@ -1,6 +1,7 @@
 define(["d3js"],function(d3){
-	return function(params){
-		var opt=params.options;
+	return function(params,dom){
+		var opt=params;
+		var respDom=dom;
 		var d3Obj, label, vAxis, dataBar;
 		var yScale, barScale;
 
@@ -10,7 +11,7 @@ define(["d3js"],function(d3){
 		var barOffset=150;
 
 		var data=new Array(opt.length).fill(0);
-		var respDom=document.createElement("div");
+		// var respDom=document.createElement("div");
 
 		require(["d3js"],function(d3) {
 			yScale=d3.scaleLinear()
@@ -49,9 +50,9 @@ define(["d3js"],function(d3){
 			 	})
 		});
 
-		this.dom=function(){
-			return respDom;
-		}
+		// this.dom=function(){
+		// 	return respDom;
+		// }
 
 		this.update=function(newData){
 			dataBar

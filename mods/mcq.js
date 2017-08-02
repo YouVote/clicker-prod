@@ -226,9 +226,10 @@ define(["ctype"], function(ctype){
 		webEngine:function(params){
 			var webObj=this;
 			var analysisObj;
+			var respDom=document.createElement("div");
 
-			require(["http://gabrielwu84.dlinkddns.com/clicker-prod/analysis/barchart.js"],function(barchart){
-				analysisObj=new barchart(params);
+			require(["http://localhost/clicker-prod/analysis/barchart.js"],function(barchart){
+				analysisObj=new barchart(params.options,respDom);
 			})
 
 			// var opt=params.options;
@@ -344,7 +345,7 @@ define(["ctype"], function(ctype){
 
 			this.responseDom=function(){
 				// return respDom;
-				return analysisObj.dom();
+				return respDom;
 			}
 			this.processResponse=function(studentUuid,ans){
 				data[ans]++;
