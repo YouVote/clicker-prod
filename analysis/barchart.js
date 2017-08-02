@@ -11,7 +11,6 @@ define(["d3js"],function(d3){
 		var barOffset=150;
 
 		var data=new Array(opt.length).fill(0);
-		// var respDom=document.createElement("div");
 
 		require(["d3js"],function(d3) {
 			yScale=d3.scaleLinear()
@@ -50,18 +49,15 @@ define(["d3js"],function(d3){
 			 	})
 		});
 
-		// this.dom=function(){
-		// 	return respDom;
-		// }
-
 		this.update=function(newData){
 			dataBar
 				.data(newData)
 				.attr('width',function(d,i){
 					return barScale(d);
 				})
+		}
+		this.updateRespDim=function(height,width){
 
 		}
 	}
-
 })
