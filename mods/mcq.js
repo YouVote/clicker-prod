@@ -230,7 +230,7 @@ define(["ctype"], function(ctype){
 			var respDom=document.createElement("div");
 
 			// make this link more concrete. 
-			require(["../clicker-prod/analysis/barchart.js"],function(barchart){
+			require([params.system.yvProdBaseAddr+"analysis/barchart.js"],function(barchart){
 				analysisObj=new barchart(params.options,respDom);
 			})
 

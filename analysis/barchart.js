@@ -7,6 +7,9 @@ define(["d3js"],function(d3){
 
 		var axisStrokeWidth=3;
 		var axisSpace=2, barSpace=5; //in percentage
+		
+		// abstract construction of chart into function
+		// that can be called when dimension is updated
 		var pHeight=500, pWidth=600, barColor='#7755ff';
 		var barOffset=150;
 
