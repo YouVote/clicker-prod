@@ -8,15 +8,22 @@ define([],function(){
 		appEngine:function(params){
 			var sigAw;
 			var app=this;
-			
-			// why is onDomReady necessary?
+			// why is onDomReady necessary? not necessary. 
+			// implement this individually.
+			// to call getAns, putAns, and grayOut.
 			this.onDomReady=function(callback){	
 				// domManager.onDomReady(callback);
 			}
+			// this.widHead()
 			this.widBody=function(){
-				// return widBody;
-				return "";
+				var pushBtn=document.createElement("button");
+				pushBtn.innerHTML="push";
+				pushBtn.onclick=function(){
+					app.sigAw("y");
+				}
+				return pushBtn;
 			}
+			// this.getAns(); this.putAns(); this.grayOut()
 			this.passSigAw=function(_sigAw){
 				app.sigAw=_sigAw;
 			}
@@ -43,7 +50,7 @@ define([],function(){
 				web.sigWa=_sigWa;
 			}
 			this.sigAw=function(studentUuid,data){
-
+				console.log(studentUuid + " " + data)
 			}
 		}
 	}

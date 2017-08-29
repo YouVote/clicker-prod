@@ -1,16 +1,23 @@
 define(["ctype"], function(ctype){
+	var widgetParams={
+		"analysis":"barchart",
+		"analysisParams":null
+	}
 	return {
-		authEngine:function(){
+		author:function(){
 			var editDiv=document.createElement("div");
-			var widgetParams;
+			var mcqOptions;
 			var vm;
 
-			this.templateParams=function(){
-				return '{"options":["T = mg","T &gt mg","T &lt mg","not able to tell"]}'
-			}
+			this.coreTemplate='["T = mg","T &gt mg","T &lt mg","not able to tell"]';
+
+			// this.templateParams=function(){
+			// 	return '{"options":["T = mg","T &gt mg","T &lt mg","not able to tell"]}'
+			// }
 			this.currParams=function(params){
-				widgetParams=params;
-				// console.log(widgetParams)
+
+				mcqOptions=params;
+				console.log(widgetParams)
 				// console.log(widgetParams["options"]);
 			}
 			this.editDom=function(updateCallback){
@@ -55,7 +62,7 @@ define(["ctype"], function(ctype){
 					
 				style.appendTo('head');
 				require(["vue"],function(Vue){
-					var initial_options=widgetParams.options;
+					var initial_options=mcqOptions;
 					var optField={
 						template:'\
 							<div class="optfield">\
@@ -104,7 +111,7 @@ define(["ctype"], function(ctype){
 						template:'\
 						<div class="container" style="width:100%;">\
 							<div class="form-group btn-group-vertical btn-block justify-content-end" >\
-								<mcq-opt v-for="(opt,i) in options" :opt="opt" :i="i" :remove="remove" :update="update"></mcq-opt>\
+								<mcq-opt v-for="(opt,i) in options" :key="i" :opt="opt" :i="i" :remove="remove" :update="update"></mcq-opt>\
 							</div>\
 							<div class="form-group btn-group-vertical btn-block justify-content-end" style="margin-top:-15px;">\
 								<label class="form-check-label btn btn-default radio-inline " v-on:click="add" v-on:mouseenter="showP=true" v-on:mouseleave="showP=false">\
@@ -145,19 +152,27 @@ define(["ctype"], function(ctype){
 
 			}
 		},
-		appEngine:function(params){
+		appEngine:function(params){// which means change this to coreParams, sideAppParams
 			var appObj; var widBody=document.createElement("div");
-			var domManager=new function(){
-				var domReady=false; var domReadyCallback=null;
-				this.domReady=function(){
-					if(domReadyCallback!=null){domReadyCallback();}
-					domReady=true;
-				}
-				this.onDomReady=function(callback){
-					if(domReady){callback();}
-					domReadyCallback=callback;
-				}
-			}();
+			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
+				var newParams={};
+				newParams.core=params;
+				params = newParams;
+			}
+			var mcqOpts=params.core;
+			// implement domManager on getAns, putAns, and grayOut directly.
+			// (do this when it breaks, so that there is something to test against.)
+			// var domManager=new function(){
+			// 	var domReady=false; var domReadyCallback=null;
+			// 	this.domReady=function(){
+			// 		if(domReadyCallback!=null){domReadyCallback();}
+			// 		domReady=true;
+			// 	}
+			// 	this.onDomReady=function(callback){
+			// 		if(domReady){callback();}
+			// 		domReadyCallback=callback;
+			// 	}
+			// }();
 			require(["vue"],function(Vue){
 				var opt={
 					template:'<div ref="content"></div>',
@@ -175,7 +190,7 @@ define(["ctype"], function(ctype){
 					<optfield :optData="opt"></optfield></label></div>\
 					',
 					data:{
-						options:params.options,
+						options:mcqOpts,
 						choice:null,
 						disabled:false
 					},
@@ -195,11 +210,11 @@ define(["ctype"], function(ctype){
 						"optfield":opt
 					}
 				})
-				domManager.domReady();
+				// domManager.domReady();
 			})
-			this.onDomReady=function(callback){	
-				domManager.onDomReady(callback);
-			}
+			// this.onDomReady=function(callback){	
+			// 	domManager.onDomReady(callback);
+			// }
 			this.widHead=function(){
 				var widHead='\
 				<style>\
@@ -223,14 +238,33 @@ define(["ctype"], function(ctype){
 				appObj.grayOut();
 			}
 		},
-		webEngine:function(params){
+		webEngine:function(params){ // may change this to coreParams, sideWebParams
 			var webObj=this;
+			var responseDom=document.createElement("div")
 			var analysisObj;
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
-			require([yvProdBaseAddr+"/analysis/barchart.js"],function(barchart){
-				analysisObj=new barchart(params);
+			// loop over side params, replace widgetParams.
+			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
+				var _params={};
+				_params.core=params;
+				params = _params;
+			}
+			if(typeof(params["side"])=="object"){
+				for(paramName in params["side"]){
+					if(widgetParams[paramName]!=undefined){
+						widgetParams[paramName]=params["side"][paramName];
+					}
+				}
+			}
+			params.side=widgetParams;
+			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
+				analysisObj=new analysis.engine(params.core,params.side["analysisParams"]);
+				$(responseDom).html(analysisObj.dom())
 			})
+			// var opt=params.options;
+			var mcqOpts=params.core;
 			var widletObj; this.widBody=document.createElement("div");
+			var data=new Array(mcqOpts.length).fill(0);
 			require(["vue"],function(Vue){
 				var opt={
 					template:'<div ref="content"></div>',
@@ -248,7 +282,7 @@ define(["ctype"], function(ctype){
 					<optfield :optData="opt"></optfield></label></div>\
 					',
 					data:{
-						options:params.options,
+						options:mcqOpts,
 						choice:null,
 						disabled:false
 					},
@@ -284,13 +318,10 @@ define(["ctype"], function(ctype){
 			}
 
 			this.responseDom=function(){
-				// may be called before anaysisObj is ready. 
-				return analysisObj.dom();
+				return responseDom;
 			}
 			this.processResponse=function(studentUuid,ans){
 				data[ans]++;
-				// console.log(data, ans);
-				// update(data);
 				return analysisObj.update(data);
 			}
 			this.updateRespDim=function(height,width){
