@@ -1,14 +1,19 @@
 define(['ctype'], function(ctype){
 	return {
-		authEngine:function(){
-			this.templateParams=function(){
-				//params.options refer to this part
-				//options is the name to be called (i.e. can be changed, with
-				//other sections to be changed accordingly also.)
+		author:function(){
 
-				return '{"imgUrl":"http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"}'
-			}
+			this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
+
 		},
+		// authEngine:function(){
+		// 	this.templateParams=function(){
+		// 		//params.options refer to this part
+		// 		//options is the name to be called (i.e. can be changed, with
+		// 		//other sections to be changed accordingly also.)
+
+		// 		return '{"imgUrl":"http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"}'
+		// 	}
+		// },
 		appEngine:function(params){
 			// this section affects the user interface
 			var optDiv=document.createElement("div");
@@ -117,7 +122,6 @@ define(['ctype'], function(ctype){
 		},
 		webEngine:function(params){
 			var url=params.imgUrl;
-
 			var d3Obj, chart;
 			var pHeight=600, pWidth=600;
 			var pMargin = {top : 10, bottom : 10, left : 30, right : 10};
