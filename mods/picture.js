@@ -1,100 +1,95 @@
 define(['ctype'], function(ctype){
 	return {
 		author:function(){
-
 			this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
-
 		},
-		// authEngine:function(){
-		// 	this.templateParams=function(){
-		// 		//params.options refer to this part
-		// 		//options is the name to be called (i.e. can be changed, with
-		// 		//other sections to be changed accordingly also.)
 
-		// 		return '{"imgUrl":"http://www.physicsclassroom.com/getattachment/reviews/vectors/q52.gif"}'
-		// 	}
-		// },
 		appEngine:function(params){
 			// this section affects the user interface
 			var optDiv=document.createElement("div");
-			var inputDoms;
-			var ansSvg;
-			var aHeight = 300, 
-				aWidth = 300;
-			var aMargin = {top : 10, bottom : 10, right : 10, left : 10};
-			var ansChart, url;
-			var ansTransfer = [];
-			var ansDataset = [];
-			var radius = 4;
+			// todo: impose core/side params here
+			var url=params.imgUrl;
+			var pictObj=null;
+			var pictKivQueue=[];
+			// side params
+			var aHeight=300,aWidth=300;var radius=4;
+			var aMargin={top:10,bottom:10,right:10,left:10};
 			
-			require.config({
-				paths:{
-					"d3js":"https://cdnjs.cloudflare.com/ajax/libs/d3/4.2.0/d3.min"
-				}
-			})
-			var domManager=new function(){
-				var domReady=false; var domReadyCallback=null;
-				this.domReady=function(){
-					if(domReadyCallback!=null){domReadyCallback();}
-					domReady=true;
-				}
-				this.onDomReady=function(callback){
-					if(domReady){callback();}
-					domReadyCallback=callback;
-				}
-			}();
-			this.onDomReady=function(callback){	
-				domManager.onDomReady(callback);
-			}
+			// var domManager=new function(){
+			// 	var domReady=false; var domReadyCallback=null;
+			// 	this.domReady=function(){
+			// 		if(domReadyCallback!=null){domReadyCallback();}
+			// 		domReady=true;
+			// 	}
+			// 	this.onDomReady=function(callback){
+			// 		if(domReady){callback();}
+			// 		domReadyCallback=callback;
+			// 	}
+			// }();
+			// this.onDomReady=function(callback){	
+			// 	domManager.onDomReady(callback);
+			// }
 
 			require(["d3js"],function(d3){
-				url=params.imgUrl;
+				pictObj=new (function(){
+					var ansTransfer = [];
+					var ansDataset = [];
+					var ansSvg=d3.select(optDiv).append('svg')
+						.attr('height',aHeight).attr('width',aWidth)
+						.style('background-color', 'white')
 
-				ansSvg = d3.select(optDiv).append('svg')
-					.attr('height',aHeight).attr('width',aWidth)
-					.style('background-color', 'white')
-
-				ansChart = ansSvg.append('g')
+					var ansChart = ansSvg.append('g')
 						.append('image')
 						.attr('xlink:href', url)
 						.attr('width', '100%')
 						.attr('height', '100%')
 						.attr('preserveAspectRatio', 'none')
 
-				ansChart.on("click", function() {
+					ansChart.on("click", function() {
+						var coords = d3.mouse(this);
+						//To ensure only one data point will be selected to be transferred as answer
+						ansTransfer.shift(); 
+						//coordinates as of the screen itself 
+						var newData={x:(coords[0]),y:(coords[1])};
+						var transData = {x: coords[0],y: aHeight-coords[1]};
+						ansDataset.push(newData);
+						ansTransfer.push(transData);
+						makeCircle(ansDataset);
+						ansDataset.shift();
+					});
 
-				    var coords = d3.mouse(this);
-
-				    //To ensure only one data point will be selected to be transferred as answer
-				    ansTransfer.shift(); 
-				    
-				    //coordinates as of the screen itself 
-				    var newData= {
-				    x: (coords[0]),  
-				    y: (coords[1])
-				    };
-
-				    var transData = {
-				    	x: coords[0],
-				    	y: aHeight-coords[1]
-				    };
-				    ansDataset.push(newData);
-				    ansTransfer.push(transData);
-					
-					makeCircle(ansDataset);
-					ansDataset.shift();
-				});
-
-				function makeCircle(data){
-					ansSvg.selectAll("circle").remove();
-				    ansSvg.selectAll("circle")  // For new circle, go through the update process
-					    .data(data)
-					    .enter()
-					    .append("circle")
-					    .attr("cx", function(d) {return d.x})
-					    .attr('cy', function(d) {return d.y})
-					    .attr('r', radius)
-					    .attr("fill","blue")
+					function makeCircle(data){
+						ansSvg.selectAll("circle").remove();
+						ansSvg.selectAll("circle")  // For new circle, go through the update process
+							.data(data)
+							.enter()
+							.append("circle")
+							.attr("cx", function(d) {return d.x})
+							.attr('cy', function(d) {return d.y})
+							.attr('r', radius)
+							.attr("fill","blue")
+					}
+					this.getAns=function(){
+						if(typeof ansTransfer!="undefined" && 
+							ansTransfer!=null && ansTransfer.length>0){
+							return ansTransfer;
+						}else{
+							return null;
+						}
+					}
+					this.putAns=function(data){
+						makeCircle(data);
+					}
+					this.grayOut=function(){
+						// to lock the svg screen so no new data points could
+						// be clicked after submitting
+						ansSvg.on("click",null);
+					}
+				})();
+				while(kivItem=pictKivQueue.shift()){
+					var fn=pictObj[kivItem.func];
+					var args=kivItem.args;
+					fn.apply(null,args);
 				}
 			})
 
@@ -102,57 +97,81 @@ define(['ctype'], function(ctype){
 				return optDiv;
 			}
 			this.getAns=function(){
-				if(typeof ansTransfer != "undefined" && ansTransfer != null && ansTransfer.length > 0){
-					return ansTransfer;
-					console.log(ansTransfer);
+				//  implement asycn here too
+				if(pictObj!=null){
+					return pictObj.getAns();
+				}else{
+					console.warn("pictObj not ready to getAns");
 				}
-				return null;
 			};
 			this.putAns=function(currAns){
-				// console.log("3");
-				// inputDoms[currAns].attr("checked","checked").checkboxradio("refresh");
+				if(pictObj!=null){
+					pictObj.putAns(currAns);
+				}else{
+					var kivItem={func:"putAns",args:[currAns]};
+					pictKivQueue.push(kivItem);
+				}
 			}
 
 			// in clicker-app/core/question.js
 			this.grayOut=function(){
 				//to lock the svg screen so no need new data points could
 				//be clicked after submitting
-				ansSvg.on("click",null);
+				// ansSvg.on("click",null);
+				if(pictObj!=null){
+					pictObj.grayOut();
+				}else{
+					var kivItem={func:"grayOut",args:[]};
+					pictKivQueue.push(kivItem);
+				}
 			}
 		},
 		webEngine:function(params){
 			var url=params.imgUrl;
-			var d3Obj, chart;
-			var pHeight=600, pWidth=600;
-			var pMargin = {top : 10, bottom : 10, left : 30, right : 10};
-			var data = [];
+			var pictObj=null;
+			var pictKivQueue=[];
+			
+			var studentResponses=[];
 			var respDom=document.createElement("div");
+			// side params
+			var pHeight=600,pWidth=600;
+			var pMargin={top:10,bottom:10,left:30,right:10};
+			
+			require(["d3js"],function(d3){
+				pictObj=new (function(){
+					var d3Obj=d3.select(respDom).append(`svg`)
+						.attr('height',pHeight).attr('width',pWidth)
+					d3Obj.append('g')
+						.append('image')
+						.attr('xlink:href', url)
+						.attr('width', '100%')
+						.attr('height', '100%')
+						.attr('preserveAspectRatio', 'none')
 
-			require(["d3js"],function(d3) {
-
-				d3Obj=d3.select(respDom).append(`svg`)
-					.attr('height',pHeight).attr('width',pWidth)
-
-				chart = d3Obj.append('g')
-					.append('image')
-					.attr('xlink:href', url)
-					.attr('width', '100%')
-					.attr('height', '100%')
-					.attr('preserveAspectRatio', 'none')
+					this.update=function(data){
+						d3Obj.selectAll("circle")  // For new circle, go through the update process
+							.data(data)
+							.enter()
+							.append("circle")
+							.attr("cx", function(d,i) {
+								return (d.x*(pWidth/300));
+							}) 
+							.attr('cy', function(d,i) {
+								// formula for scaling from axis to svg
+								return pHeight-(d.y*(pHeight/300));
+							})
+							.attr('r', 8)
+							.attr("fill","red")
+					}	
+				})();
 				// webEngineReadyCallback();
+				while(kivItem=pictKivQueue.shift()){
+					var fn=pictObj[kivItem.func];
+					var args=kivItem.args;
+					fn.apply(null,args);
+				}
 			});
 
-			function update(newData){
-			    d3Obj.selectAll("circle")  // For new circle, go through the update process
-				    .data(newData)
-				    .enter()
-				    .append("circle")
-				    .attr("cx", function(d,i) {return (d[0].x*(pWidth/300))}) 
-				    //formula for scaling from axis to svg
-				    .attr('cy', function(d,i) {return pHeight-(d[0].y*(pHeight/300))})
-				    .attr('r', 8)
-				    .attr("fill","red")
-			}
 			this.responseInput=function(){
 				var optDiv=document.createElement("div");
 				return optDiv;
@@ -161,9 +180,16 @@ define(['ctype'], function(ctype){
 				return respDom;
 			}
 			this.processResponse=function(studentUuid,ans){
-				data.push(ans);
-				// console.log(data);
-				update(data);
+				studentResponses.push(ans);
+				if(pictObj!=null){
+					pictObj.update(ans);
+				}else{
+					var kivItem={func:"update",args:[ans]};
+					pictKivQueue.push(kivItem);
+				}
+			}
+			this.updateRespDim=function(height,width){
+
 			}
 		}
 	}

@@ -19,7 +19,6 @@ define(["d3js"],function(d3){
 			// if(typeof(params["analysisParams"])=="object"){
 			// for(paramName in params["analysisParams"]){
 			// analysisParams[paramName]=params["analysisParams"][paramName];
-				console.log(sideParams)
 			if(typeof(sideParams)=="object"){
 				for(paramName in sideParams){
 					if(analysisParams[paramName]!=undefined){
