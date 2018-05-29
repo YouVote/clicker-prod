@@ -1,4 +1,4 @@
-define(["ctype"], function(ctype){
+define(["async","ctype"], function(AsyncProxy,ctype){
 	var widgetParams={
 		"analysis":"barchart",
 		"analysisParams":null
@@ -149,7 +149,8 @@ define(["ctype"], function(ctype){
 			}
 		},
 		appEngine:function(params){// which means change this to coreParams, sideAppParams
-			var appObj=null; var appKivQueue=[];
+			// var appObj=null; var appKivQueue=[];
+			var appObj=new AsyncProxy()
 			var widBody=document.createElement("div");
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
 				var newParams={};
@@ -179,7 +180,7 @@ define(["ctype"], function(ctype){
 						optContent.putInto(this.$refs.content);
 					}
 				}
-				appObj=new Vue({
+				appObjTemp=new Vue({
 					el:widBody,
 					template:'\
 					<div class="form-group btn-group-vertical btn-block justify-content-end">\
@@ -207,11 +208,12 @@ define(["ctype"], function(ctype){
 						"optfield":opt
 					}
 				})
-				while(kivItem=appKivQueue.shift()){
-					var fn=appObj[kivItem.func];
-					var args=kivItem.args;
-					fn.apply(null,args);
-				}
+				// while(kivItem=appKivQueue.shift()){
+				// 	var fn=appObj[kivItem.func];
+				// 	var args=kivItem.args;
+				// 	fn.apply(null,args);
+				// }
+				appObj.__reinstate__(appObjTemp)
 				// domManager.domReady();
 			})
 			// this.onDomReady=function(callback){	
@@ -231,34 +233,32 @@ define(["ctype"], function(ctype){
 				return widBody;
 			}
 			this.getAns=function(){
-				if(appObj!=null){
-					return appObj.getAns();
-				}else{
-					console.warn("appObj is not ready to getAns");
-				}
+				// if(appObj!=null){
+				// 	return appObj.getAns();
+				// }else{
+				// 	console.warn("appObj is not ready to getAns");
+				// }
+				return appObj.getAns();
 			};
 			this.putAns=function(currAns){
 				// encounters async issues here -
 				// appObj called before being initialized. 
-				if(appObj!=null){
-					appObj.putAns(currAns);
-				}else{
-					var kivItem={func:"putAns",args:[currAns]};
-					appKivQueue.push(kivItem);
-				}
+				// if(appObj!=null){
+				// 	appObj.putAns(currAns);
+				// }else{
+				// 	var kivItem={func:"putAns",args:[currAns]};
+				// 	appKivQueue.push(kivItem);
+				// }
+				appObj.putAns(currAns);
 			}
 			this.grayOut=function(){
-				// the grayout backtrack function does not really work. 
-				// may need to trigger grayout on app level 
-				// (to also gray out submit button)
-				// ok, it does work on this level... but on the ionic
-				// level there is seems to be some problem
-				if(appObj!=null){
-					appObj.grayOut();
-				}else{
-					var kivItem={func:"grayOut",args:[]};
-					appKivQueue.push(kivItem);
-				}
+				// if(appObj!=null){
+				// 	appObj.grayOut();
+				// }else{
+				// 	var kivItem={func:"grayOut",args:[]};
+				// 	appKivQueue.push(kivItem);
+				// }
+				appObj.grayOut();
 			}
 		},
 		webEngine:function(params){ // may change this to coreParams, sideWebParams
@@ -266,8 +266,8 @@ define(["ctype"], function(ctype){
 			var responseDom=document.createElement("div")
 			// consider pulling out analysis engine into a class of its own
 			// possibly in clicker-prod/analysis/main.js
-			var analysisObj=null;
-			var analysisKivQueue=[];
+			// var analysisObj=null; var analysisKivQueue=[];
+			var analysisObj=new AsyncProxy();
 
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
 			// loop over side params, replace widgetParams.
@@ -287,14 +287,15 @@ define(["ctype"], function(ctype){
 
 			params.side=widgetParams;
 			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
-				analysisObj=new analysis.engine(params.core,params.side["analysisParams"]);
-				$(responseDom).html(analysisObj.dom())
+				analysisObjTemp=new analysis.engine(params.core,params.side["analysisParams"]);
+				$(responseDom).html(analysisObjTemp.dom())
 				// execute backlogged kiv items
-				while(kivItem=analysisKivQueue.shift()){
-					var fn=analysisObj[kivItem.func];
-					var args=kivItem.args;
-					fn.apply(null,args);
-				}
+				// while(kivItem=analysisKivQueue.shift()){
+				// 	var fn=analysisObj[kivItem.func];
+				// 	var args=kivItem.args;
+				// 	fn.apply(null,args);
+				// }
+				analysisObj.__reinstate__(analysisObjTemp);
 			})
 			// var opt=params.options;
 			var mcqOpts=params.core;
@@ -359,21 +360,22 @@ define(["ctype"], function(ctype){
 				// called by yvWebKernel/questionHandler.js
 				// in case analysisObj not ready, 
 				data[ans]++;
-				if(analysisObj!=null){
-					analysisObj.update(data);
-				}else{
-					var kivItem={func:"update",args:[data]};
-					analysisKivQueue.push(kivItem);
-				}
+				// if(analysisObj!=null){
+				// 	analysisObj.update(data);
+				// }else{
+				// 	var kivItem={func:"update",args:[data]};
+				// 	analysisKivQueue.push(kivItem);
+				// }
+				analysisObj.update(data);
 			}
 			this.updateRespDim=function(height,width){
-				// analysisObj.updateDim(height,width);
-				if(analysisObj!=null){
-					analysisObj.updateDim(height,width);
-				}else{
-					var kivItem={func:"updateDim",args:[height,width]};
-					analysisKivQueue.push(kivItem);
-				}
+				// if(analysisObj!=null){
+				// 	analysisObj.updateDim(height,width);
+				// }else{
+				// 	var kivItem={func:"updateDim",args:[height,width]};
+				// 	analysisKivQueue.push(kivItem);
+				// }
+				analysisObj.updateDim(height,width);
 			}
 		}
 	}

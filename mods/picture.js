@@ -1,4 +1,4 @@
-define(['ctype'], function(ctype){
+define(["async","ctype"], function(AsyncProxy,ctype){
 	return {
 		author:function(){
 			this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
@@ -9,8 +9,8 @@ define(['ctype'], function(ctype){
 			var optDiv=document.createElement("div");
 			// todo: impose core/side params here
 			var url=params.imgUrl;
-			var pictObj=null;
-			var pictKivQueue=[];
+			// var pictObj=null; var pictKivQueue=[];
+			var pictObj=new AsyncProxy();
 			// side params
 			var aHeight=300,aWidth=300;var radius=4;
 			var aMargin={top:10,bottom:10,right:10,left:10};
@@ -31,7 +31,7 @@ define(['ctype'], function(ctype){
 			// }
 
 			require(["d3js"],function(d3){
-				pictObj=new (function(){
+				pictObjTemp=new (function(){
 					var ansTransfer = [];
 					var ansDataset = [];
 					var ansSvg=d3.select(optDiv).append('svg')
@@ -86,11 +86,12 @@ define(['ctype'], function(ctype){
 						ansSvg.on("click",null);
 					}
 				})();
-				while(kivItem=pictKivQueue.shift()){
-					var fn=pictObj[kivItem.func];
-					var args=kivItem.args;
-					fn.apply(null,args);
-				}
+				// while(kivItem=pictKivQueue.shift()){
+				// 	var fn=pictObj[kivItem.func];
+				// 	var args=kivItem.args;
+				// 	fn.apply(null,args);
+				// }
+				pictObj.__reinstate__(pictObjTemp)
 			})
 
 			this.widBody=function(){
@@ -98,19 +99,21 @@ define(['ctype'], function(ctype){
 			}
 			this.getAns=function(){
 				//  implement asycn here too
-				if(pictObj!=null){
-					return pictObj.getAns();
-				}else{
-					console.warn("pictObj not ready to getAns");
-				}
+				// if(pictObj!=null){
+				// 	return pictObj.getAns();
+				// }else{
+				// 	console.warn("pictObj not ready to getAns");
+				// }
+				return pictObj.getAns();
 			};
 			this.putAns=function(currAns){
-				if(pictObj!=null){
-					pictObj.putAns(currAns);
-				}else{
-					var kivItem={func:"putAns",args:[currAns]};
-					pictKivQueue.push(kivItem);
-				}
+				// if(pictObj!=null){
+				// 	pictObj.putAns(currAns);
+				// }else{
+				// 	var kivItem={func:"putAns",args:[currAns]};
+				// 	pictKivQueue.push(kivItem);
+				// }
+				pictObj.putAns(currAns);
 			}
 
 			// in clicker-app/core/question.js
@@ -118,18 +121,20 @@ define(['ctype'], function(ctype){
 				//to lock the svg screen so no need new data points could
 				//be clicked after submitting
 				// ansSvg.on("click",null);
-				if(pictObj!=null){
-					pictObj.grayOut();
-				}else{
-					var kivItem={func:"grayOut",args:[]};
-					pictKivQueue.push(kivItem);
-				}
+				// if(pictObj!=null){
+				// 	pictObj.grayOut();
+				// }else{
+				// 	var kivItem={func:"grayOut",args:[]};
+				// 	pictKivQueue.push(kivItem);
+				// }
+				pictObj.grayOut();
 			}
 		},
 		webEngine:function(params){
 			var url=params.imgUrl;
-			var pictObj=null;
-			var pictKivQueue=[];
+			// var pictObj=null;
+			// var pictKivQueue=[];
+			var pictObj=new AsyncProxy();
 			
 			var studentResponses=[];
 			var respDom=document.createElement("div");
@@ -138,7 +143,7 @@ define(['ctype'], function(ctype){
 			var pMargin={top:10,bottom:10,left:30,right:10};
 			
 			require(["d3js"],function(d3){
-				pictObj=new (function(){
+				pictObjTemp=new (function(){
 					var d3Obj=d3.select(respDom).append(`svg`)
 						.attr('height',pHeight).attr('width',pWidth)
 					d3Obj.append('g')
@@ -165,11 +170,12 @@ define(['ctype'], function(ctype){
 					}	
 				})();
 				// webEngineReadyCallback();
-				while(kivItem=pictKivQueue.shift()){
-					var fn=pictObj[kivItem.func];
-					var args=kivItem.args;
-					fn.apply(null,args);
-				}
+				// while(kivItem=pictKivQueue.shift()){
+				// 	var fn=pictObj[kivItem.func];
+				// 	var args=kivItem.args;
+				// 	fn.apply(null,args);
+				// }
+				pictObj.__reinstate__(pictObjTemp)
 			});
 
 			this.responseInput=function(){
@@ -181,12 +187,13 @@ define(['ctype'], function(ctype){
 			}
 			this.processResponse=function(studentUuid,ans){
 				studentResponses.push(ans);
-				if(pictObj!=null){
-					pictObj.update(ans);
-				}else{
-					var kivItem={func:"update",args:[ans]};
-					pictKivQueue.push(kivItem);
-				}
+				// if(pictObj!=null){
+				// 	pictObj.update(ans);
+				// }else{
+				// 	var kivItem={func:"update",args:[ans]};
+				// 	pictKivQueue.push(kivItem);
+				// }
+				pictObj.update(ans);
 			}
 			this.updateRespDim=function(height,width){
 
