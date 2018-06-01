@@ -1,19 +1,11 @@
 define([],function(){
 	return {
-		authEngine:function(){
-			this.templateParams=function(){
-				return '\"\"';
-			}
+		author:function(){
+			this.coreTemplate='\"\"';
 		},
 		appEngine:function(params){
 			var sigAw;
 			var app=this;
-			// why is onDomReady necessary? not necessary. 
-			// implement this individually.
-			// to call getAns, putAns, and grayOut.
-			this.onDomReady=function(callback){	
-				// domManager.onDomReady(callback);
-			}
 			// this.widHead()
 			this.widBody=function(){
 				var pushBtn=document.createElement("button");

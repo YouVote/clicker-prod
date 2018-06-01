@@ -54,7 +54,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 							margin:-3px -2px -3px -2px;\
 						}\
 					</style>\
-					');
+				');
 					
 				style.appendTo('head');
 				require(["vue"],function(Vue){

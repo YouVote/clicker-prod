@@ -2,16 +2,18 @@ define(['ctype'], function(ctype){
 	//to add shim stuff in later to try.
 	//3 things, define, requirejs, require.
 	return {
-		authEngine:function(){
-			this.templateParams=function(){
-				//params.options refer to this part
-				//options is the name to be called (i.e. can be changed, with
-				//other sections to be changed accordingly also.)
+		author:function(){
+			// this.templateParams=function(){
+			// 	//params.options refer to this part
+			// 	//options is the name to be called (i.e. can be changed, with
+			// 	//other sections to be changed accordingly also.)
 
-				return '{"videoUrl":"pendulum.mp4"}'
-			}
+			// 	return '{"videoUrl":"pendulum.mp4"}'
+			// }
+			this.coreTemplate='"pendulum.mp4"';
 		},
-		appEngine:function(params,domReadyCallback){
+		// appEngine:function(params,domReadyCallback){
+		appEngine:function(params){
 			// this section affects the user interface
 			var optDiv=document.createElement("div");
 			var inputDoms;
@@ -48,15 +50,12 @@ define(['ctype'], function(ctype){
 					loop : true,
 					muted : true
 				});
-
-
 				$(vid).click(function(){
 					if($(this).get(0).paused){
 						$(this).get(0).play();
 					}else{
 						$(this).get(0).pause();
 					}
-					
 				});
 				vid.appendTo(vidH);
 				var slide2 = $('<div/>').attr('id', 'slider').appendTo(vidH);
@@ -121,8 +120,7 @@ define(['ctype'], function(ctype){
 				$(vid).get(0).onpause = function(){
 					clearInterval(timing);
 				};
-
-		        domReadyCallback();
+		        // domReadyCallback();
 			})
 
 			this.responseDom=function(){
@@ -137,7 +135,6 @@ define(['ctype'], function(ctype){
 			this.putAns=function(currAns){
 				// inputDoms[currAns].attr("checked","checked").checkboxradio("refresh");
 			}
-
 			// in clicker-app/core/question.js
 			this.grayOut=function(){
 				//to lock the svg screen so no need new data points could
@@ -146,11 +143,9 @@ define(['ctype'], function(ctype){
 					disable : true,
 				});
 			}
-
-			
-			
 		},
-		webEngine:function(params,webEngineReadyCallback){
+		// webEngine:function(params,webEngineReadyCallback){
+		webEngine:function(params){
 			var pHeight=600, pWidth=600;
 			var pMargin = {top : 10, bottom : 10, left : 30, right : 10};
 			var rectOpacity = 0.85;
@@ -183,7 +178,6 @@ define(['ctype'], function(ctype){
 
 			})
 			require([`ion-rangeslider`, `d3js`],function(ionRangeSlider, d3) {
-
 				vid = $('<video/>',{
 					id : 'video1',
 					width : (pWidth - pMargin.left - pMargin.right),
@@ -294,10 +288,8 @@ define(['ctype'], function(ctype){
 
 					x = d3.scaleTime()
 						.range([0,$(vid).get(0).clientWidth]);
-
 					y = d3.scaleLinear()
 						.range([$(vid).get(0).clientHeight-pMargin.bottom,pMargin.top]);
-
 
 					cline = d3.line()
 						.x(function(d){return x(d.a);})
@@ -400,8 +392,6 @@ define(['ctype'], function(ctype){
 							.duration(200)
 							.attr('opacity', 0)
 					})
-
-
 				},400);
 
 				$(vid).get(0).onplay = function(){
@@ -440,10 +430,7 @@ define(['ctype'], function(ctype){
 				function startVid(time){
 					$(vid).get(0).currentTime=time;
 				}
-
-
-				webEngineReadyCallback();
-
+				// webEngineReadyCallback();
 			});
 
 			function update(newData){
@@ -507,7 +494,6 @@ define(['ctype'], function(ctype){
 						.attr('r', (x([lineData][0][1].a) - x([lineData][0][0].a))/2)
 						.attr('opacity', 0)	
 						.attr('fill', 'black')
-
 				});
 			}
 		}

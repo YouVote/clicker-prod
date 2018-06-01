@@ -3,7 +3,8 @@ define([],function(){
 		this.availableMods=[
 			"mcq",
 			"picture",
-			"video",
+			"youtube",
+			"videoChart",
 			"testsig"
 		]
 	}

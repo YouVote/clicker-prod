@@ -8,9 +8,7 @@ define(["ctype"], function(ctype){
 			var editDiv=document.createElement("div");
 			var mcqOptions;
 			var vm;
-
-			this.coreTemplate='{"youtubeId":"FXfrncRey-4"}';// needs to be in an array or object form
-
+			this.coreTemplate='"FXfrncRey-4"';
 			this.currParams=function(params){
 				mcqOptions=params.youtubeId;
 				console.log(mcqOptions)
@@ -26,7 +24,8 @@ define(["ctype"], function(ctype){
 				params = newParams;
 			}
 
-			var youtubeId=params.core.youtubeId;
+			// var youtubeId=params.core.youtubeId;
+			var youtubeId=params.core;
 			var widBody=document.createElement("iframe");
 				widBody.src="http://www.youtube.com/embed/"+youtubeId;
 				widBody.width="100%";
@@ -54,12 +53,15 @@ define(["ctype"], function(ctype){
 			var responseDom=document.createElement("div")
 			var analysisObj;
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
-			// loop over side params, replace widgetParams.
+
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
 				var _params={};
 				_params.core=params;
 				params = _params;
 			}
+			// side params is used to override default behaviour 
+			// specified in widgetParams.
+			// loop over side params, replace widgetParams.
 			if(typeof(params["side"])=="object"){
 				for(paramName in params["side"]){
 					if(widgetParams[paramName]!=undefined){
@@ -67,9 +69,11 @@ define(["ctype"], function(ctype){
 					}
 				}
 			}
+			// dont think this line is really necessary, work out why this is here.  
 			params.side=widgetParams;
 
-			var youtubeId=params.core.youtubeId;
+			// var youtubeId=params.core.youtubeId;
+			var youtubeId=params.core;
 			var widBody=document.createElement("iframe");
 				widBody.src="http://www.youtube.com/embed/"+youtubeId;
 				widBody.width="100%";

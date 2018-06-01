@@ -1,14 +1,20 @@
 define(["async","ctype"], function(AsyncProxy,ctype){
 	return {
 		author:function(){
-			this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
+			// this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
+			this.coreTemplate='"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"';
 		},
 
 		appEngine:function(params){
 			// this section affects the user interface
+			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
+				var newParams={};
+				newParams.core=params;
+				params = newParams;
+			}
+			var url=params.core;
+
 			var optDiv=document.createElement("div");
-			// todo: impose core/side params here
-			var url=params.imgUrl;
 			// var pictObj=null; var pictKivQueue=[];
 			var pictObj=new AsyncProxy();
 			// side params
@@ -131,7 +137,13 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 			}
 		},
 		webEngine:function(params){
-			var url=params.imgUrl;
+			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
+				var newParams={};
+				newParams.core=params;
+				params = newParams;
+			}
+			var url=params.core;
+
 			// var pictObj=null;
 			// var pictKivQueue=[];
 			var pictObj=new AsyncProxy();
