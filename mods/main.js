@@ -4,6 +4,7 @@ define([],function(){
 			"mcq",
 			"picture",
 			"youtube",
+			"video",
 			"videoChart",
 			"testsig"
 		]
