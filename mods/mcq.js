@@ -1,4 +1,4 @@
-define(["async","ctype"], function(AsyncProxy,ctype){
+define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (original) ans system module.
 	var widgetParams={
 		"analysis":"barchart",
 		"analysisParams":null
@@ -158,19 +158,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 				params = newParams;
 			}
 			var mcqOpts=params.core;
-			// implement domManager on getAns, putAns, and grayOut directly.
-			// (do this when it breaks, so that there is something to test against.)
-			// var domManager=new function(){
-			// 	var domReady=false; var domReadyCallback=null;
-			// 	this.domReady=function(){
-			// 		if(domReadyCallback!=null){domReadyCallback();}
-			// 		domReady=true;
-			// 	}
-			// 	this.onDomReady=function(callback){
-			// 		if(domReady){callback();}
-			// 		domReadyCallback=callback;
-			// 	}
-			// }();
 			require(["vue"],function(Vue){
 				var opt={
 					template:'<div ref="content"></div>',
@@ -208,17 +195,8 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 						"optfield":opt
 					}
 				})
-				// while(kivItem=appKivQueue.shift()){
-				// 	var fn=appObj[kivItem.func];
-				// 	var args=kivItem.args;
-				// 	fn.apply(null,args);
-				// }
 				appObj.__reinstate__(appObjTemp)
-				// domManager.domReady();
 			})
-			// this.onDomReady=function(callback){	
-			// 	domManager.onDomReady(callback);
-			// }
 			this.widHead=function(){
 				var widHead='\
 				<style>\
@@ -233,31 +211,12 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 				return widBody;
 			}
 			this.getAns=function(){
-				// if(appObj!=null){
-				// 	return appObj.getAns();
-				// }else{
-				// 	console.warn("appObj is not ready to getAns");
-				// }
 				return appObj.getAns();
 			};
 			this.putAns=function(currAns){
-				// encounters async issues here -
-				// appObj called before being initialized. 
-				// if(appObj!=null){
-				// 	appObj.putAns(currAns);
-				// }else{
-				// 	var kivItem={func:"putAns",args:[currAns]};
-				// 	appKivQueue.push(kivItem);
-				// }
 				appObj.putAns(currAns);
 			}
 			this.grayOut=function(){
-				// if(appObj!=null){
-				// 	appObj.grayOut();
-				// }else{
-				// 	var kivItem={func:"grayOut",args:[]};
-				// 	appKivQueue.push(kivItem);
-				// }
 				appObj.grayOut();
 			}
 		},
@@ -289,12 +248,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
 				analysisObjTemp=new analysis.engine(params.core,params.side["analysisParams"]);
 				$(responseDom).html(analysisObjTemp.dom())
-				// execute backlogged kiv items
-				// while(kivItem=analysisKivQueue.shift()){
-				// 	var fn=analysisObj[kivItem.func];
-				// 	var args=kivItem.args;
-				// 	fn.apply(null,args);
-				// }
 				analysisObj.__reinstate__(analysisObjTemp);
 			})
 			// var opt=params.options;
@@ -360,21 +313,9 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 				// called by yvWebKernel/questionHandler.js
 				// in case analysisObj not ready, 
 				data[ans]++;
-				// if(analysisObj!=null){
-				// 	analysisObj.update(data);
-				// }else{
-				// 	var kivItem={func:"update",args:[data]};
-				// 	analysisKivQueue.push(kivItem);
-				// }
 				analysisObj.update(data);
 			}
 			this.updateRespDim=function(height,width){
-				// if(analysisObj!=null){
-				// 	analysisObj.updateDim(height,width);
-				// }else{
-				// 	var kivItem={func:"updateDim",args:[height,width]};
-				// 	analysisKivQueue.push(kivItem);
-				// }
 				analysisObj.updateDim(height,width);
 			}
 		}

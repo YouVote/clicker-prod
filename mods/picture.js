@@ -1,4 +1,4 @@
-define(["async","ctype"], function(AsyncProxy,ctype){
+define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async module.
 	return {
 		author:function(){
 			// this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
@@ -20,21 +20,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 			// side params
 			var aHeight=300,aWidth=300;var radius=4;
 			var aMargin={top:10,bottom:10,right:10,left:10};
-			
-			// var domManager=new function(){
-			// 	var domReady=false; var domReadyCallback=null;
-			// 	this.domReady=function(){
-			// 		if(domReadyCallback!=null){domReadyCallback();}
-			// 		domReady=true;
-			// 	}
-			// 	this.onDomReady=function(callback){
-			// 		if(domReady){callback();}
-			// 		domReadyCallback=callback;
-			// 	}
-			// }();
-			// this.onDomReady=function(callback){	
-			// 	domManager.onDomReady(callback);
-			// }
 
 			require(["d3js"],function(d3){
 				pictObjTemp=new (function(){
@@ -92,11 +77,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 						ansSvg.on("click",null);
 					}
 				})();
-				// while(kivItem=pictKivQueue.shift()){
-				// 	var fn=pictObj[kivItem.func];
-				// 	var args=kivItem.args;
-				// 	fn.apply(null,args);
-				// }
 				pictObj.__reinstate__(pictObjTemp)
 			})
 
@@ -104,35 +84,16 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 				return optDiv;
 			}
 			this.getAns=function(){
-				//  implement asycn here too
-				// if(pictObj!=null){
-				// 	return pictObj.getAns();
-				// }else{
-				// 	console.warn("pictObj not ready to getAns");
-				// }
 				return pictObj.getAns();
 			};
 			this.putAns=function(currAns){
-				// if(pictObj!=null){
-				// 	pictObj.putAns(currAns);
-				// }else{
-				// 	var kivItem={func:"putAns",args:[currAns]};
-				// 	pictKivQueue.push(kivItem);
-				// }
 				pictObj.putAns(currAns);
 			}
 
 			// in clicker-app/core/question.js
 			this.grayOut=function(){
-				//to lock the svg screen so no need new data points could
-				//be clicked after submitting
-				// ansSvg.on("click",null);
-				// if(pictObj!=null){
-				// 	pictObj.grayOut();
-				// }else{
-				// 	var kivItem={func:"grayOut",args:[]};
-				// 	pictKivQueue.push(kivItem);
-				// }
+				// to lock the svg screen so no need new data points could
+				// be clicked after submitting
 				pictObj.grayOut();
 			}
 		},
@@ -181,12 +142,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 							.attr("fill","red")
 					}	
 				})();
-				// webEngineReadyCallback();
-				// while(kivItem=pictKivQueue.shift()){
-				// 	var fn=pictObj[kivItem.func];
-				// 	var args=kivItem.args;
-				// 	fn.apply(null,args);
-				// }
 				pictObj.__reinstate__(pictObjTemp)
 			});
 
@@ -199,12 +154,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){
 			}
 			this.processResponse=function(studentUuid,ans){
 				studentResponses.push(ans);
-				// if(pictObj!=null){
-				// 	pictObj.update(ans);
-				// }else{
-				// 	var kivItem={func:"update",args:[ans]};
-				// 	pictKivQueue.push(kivItem);
-				// }
 				pictObj.update(ans);
 			}
 			this.updateRespDim=function(height,width){

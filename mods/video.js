@@ -55,11 +55,8 @@ define(['d3js','jquery'],function(d3){ // the archetypal sync module.
 					var sig={cmd:"response",resState:"up"}
 					app.sigAw(sig);
 				}
-				// other events: onplay, onseeked, oncanplaythrough, onloadedmetadata
+				// other events: onplay, onseeked, oncanplaythrough, onloadedmetadata, onwaiting
 				
-				videoDom.onwaiting=function(){
-					// console.log("app onwaiting triggered");
-				}
 				videoDom.onplaying=function(){
 					// can be triggered from both video.play() and recovery from waiting state.
 					// check which one it is, and if it is a recovery from waiting state, send 
