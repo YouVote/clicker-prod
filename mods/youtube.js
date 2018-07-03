@@ -27,7 +27,7 @@ define(["ctype"], function(ctype){
 			// var youtubeId=params.core.youtubeId;
 			var youtubeId=params.core;
 			var widBody=document.createElement("iframe");
-				widBody.src="http://www.youtube.com/embed/"+youtubeId;
+				widBody.src="https://www.youtube.com/embed/"+youtubeId;
 				widBody.width="100%";
 				widBody.height="100%";
 			
@@ -75,7 +75,7 @@ define(["ctype"], function(ctype){
 			// var youtubeId=params.core.youtubeId;
 			var youtubeId=params.core;
 			var widBody=document.createElement("iframe");
-				widBody.src="http://www.youtube.com/embed/"+youtubeId;
+				widBody.src="https://www.youtube.com/embed/"+youtubeId;
 				widBody.width="100%";
 				widBody.height="100%";
 
