@@ -45,18 +45,31 @@ define(['d3js','jquery'],function(d3){ // the archetypal sync module.
 					var currVidTime=(appCurrTime-appCmdTime)/1000+videoState.vidTime;
 					return currVidTime;
 				}
-				videoDom.onmousedown=function(){
+
+				// https://stackoverflow.com/questions/7018919/how-to-bind-touchstart-and-click-events-but-not-respond-to-both
+				// touchstart mousedown
+				// touchend mouseup
+				// videoDom.onmousedown=function(){
+				// 	// send signal to web
+				// 	var sig={cmd:"response",resState:"down"}
+				// 	app.sigAw(sig);
+				// }
+				// videoDom.onmouseup=function(){
+				// 	// send signal to web
+				// 	var sig={cmd:"response",resState:"up"}
+				// 	app.sigAw(sig);
+				// }
+				$(videoDom).on('touchstart mousedown', function () {
 					// send signal to web
 					var sig={cmd:"response",resState:"down"}
 					app.sigAw(sig);
-				}
-				videoDom.onmouseup=function(){
+				});
+				$(videoDom).on('touchend mouseup', function () {
 					// send signal to web
 					var sig={cmd:"response",resState:"up"}
 					app.sigAw(sig);
-				}
+				});
 				// other events: onplay, onseeked, oncanplaythrough, onloadedmetadata, onwaiting
-				
 				videoDom.onplaying=function(){
 					// can be triggered from both video.play() and recovery from waiting state.
 					// check which one it is, and if it is a recovery from waiting state, send 
