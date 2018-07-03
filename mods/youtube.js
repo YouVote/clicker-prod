@@ -50,7 +50,7 @@ define(["ctype"], function(ctype){
 		},
 		webEngine:function(params){ // may change this to coreParams, sideWebParams
 			var webObj=this;
-			var responseDom=document.createElement("div")
+			var inputDom=document.createElement("div")
 			var analysisObj;
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
 
@@ -78,22 +78,23 @@ define(["ctype"], function(ctype){
 				widBody.src="https://www.youtube.com/embed/"+youtubeId;
 				widBody.width="100%";
 				widBody.height="100%";
+				widBody.allowFullScreen=true;
 
 			this.widHead=function(){
 				var widHead='';
 				return widHead;
 			}
 
-			this.widBody=function(){
-				return widBody;
-			}
+			// this.widBody=function(){
+			// 	return widBody;
+			// }
 
 			this.responseInput=function(){
-				return this.widBody;
+				return inputDom;
 			}
 
 			this.responseDom=function(){
-				return responseDom;
+				return widBody;
 			}
 			this.processResponse=function(studentUuid,ans){
 				data[ans]++;
