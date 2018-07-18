@@ -110,47 +110,52 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 			var pictObj=new AsyncProxy();
 			
 			var studentResponses=[];
-			var respDom=document.createElement("div");
+			// var respDom=document.createElement("div");
 			// side params
 			var pHeight=600,pWidth=600;
 			var pMargin={top:10,bottom:10,left:30,right:10};
-			
-			require(["d3js"],function(d3){
-				pictObjTemp=new (function(){
-					var d3Obj=d3.select(respDom).append(`svg`)
-						.attr('height',pHeight).attr('width',pWidth)
-					d3Obj.append('g')
-						.append('image')
-						.attr('xlink:href', url)
-						.attr('width', '100%')
-						.attr('height', '100%')
-						.attr('preserveAspectRatio', 'none')
+			function initRespDom(respDom){
+				require(["d3js"],function(d3){
+					pictObjTemp=new (function(){
+						var d3Obj=d3.select(respDom).append(`svg`)
+							.attr('height',pHeight).attr('width',pWidth)
+						d3Obj.append('g')
+							.append('image')
+							.attr('xlink:href', url)
+							.attr('width', '100%')
+							.attr('height', '100%')
+							.attr('preserveAspectRatio', 'none')
 
-					this.update=function(data){
-						d3Obj.selectAll("circle")  // For new circle, go through the update process
-							.data(data)
-							.enter()
-							.append("circle")
-							.attr("cx", function(d,i) {
-								return (d.x*(pWidth/300));
-							}) 
-							.attr('cy', function(d,i) {
-								// formula for scaling from axis to svg
-								return pHeight-(d.y*(pHeight/300));
-							})
-							.attr('r', 8)
-							.attr("fill","red")
-					}	
-				})();
-				pictObj.__reinstate__(pictObjTemp)
-			});
-
-			this.responseInput=function(){
-				var optDiv=document.createElement("div");
-				return optDiv;
+						this.update=function(data){
+							d3Obj.selectAll("circle")  // For new circle, go through the update process
+								.data(data)
+								.enter()
+								.append("circle")
+								.attr("cx", function(d,i) {
+									return (d.x*(pWidth/300));
+								}) 
+								.attr('cy', function(d,i) {
+									// formula for scaling from axis to svg
+									return pHeight-(d.y*(pHeight/300));
+								})
+								.attr('r', 8)
+								.attr("fill","red")
+						}	
+					})();
+					pictObj.__reinstate__(pictObjTemp)
+				});
 			}
-			this.responseDom=function(){
-				return respDom;
+			// this.responseInput=function(){
+			// 	var optDiv=document.createElement("div");
+			// 	return optDiv;
+			// }
+			// this.responseDom=function(){
+			// 	return respDom;
+			// }
+			this.passInputDom=function(inputDom){
+			}
+			this.passRespDom=function(respDom){
+				initRespDom(respDom);
 			}
 			this.processResponse=function(studentUuid,ans){
 				studentResponses.push(ans);

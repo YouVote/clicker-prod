@@ -182,10 +182,12 @@ define(['d3js','jquery'],function(d3){ // the archetypal sync module.
 					return videoState;
 				}
 			})();
-			var analysisObj=new (function(){
+			// var analysisObj=new (function(){
+			var analysisObj;
+			var analysisClass=function(respDom){
 				var studentState={};
 				var total=0; var collateUp=0;
-				var respDom=document.createElement("div");
+				// var respDom=document.createElement("div");
 				var svg=d3.select(respDom)
 					.append("svg")
 					.attr("width",200)
@@ -225,12 +227,20 @@ define(['d3js','jquery'],function(d3){ // the archetypal sync module.
 						bgRect.attr("width",200);
 					}
 				}
-			})(); 
-			this.responseInput=function(){
-				return analysisObj.respDom();
 			}
-			this.responseDom=function(){
-				return videoObj.dom();
+			// })(); 
+			// this.responseInput=function(){
+			// 	return analysisObj.respDom();
+			// }
+			// this.responseDom=function(){
+			// 	return videoObj.dom();
+			// }
+			this.passInputDom=function(inputDom){
+				analysisObj=new analysisClass(inputDom);
+			}
+			this.passRespDom=function(respDom){
+				// videoObj=new videoClass(respDom);
+				$(respDom).html(videoObj.dom())
 			}
 			this.passSigWaBroadcast=function(_signalBroadcast){
 				web.signalBroadcast=_signalBroadcast;

@@ -45,11 +45,17 @@ define([], function(){
 			var respDom=document.createElement("div");
 			$(optDiv).html("options go here");
 			$(respDom).html("responses go here");
-			this.responseInput=function(){
-				return optDiv;
+			// this.responseInput=function(){
+			// 	return optDiv;
+			// }
+			// this.responseDom=function(){
+			// 	return respDom;
+			// }
+			this.passInputDom=function(inputDom){
+
 			}
-			this.responseDom=function(){
-				return respDom;
+			this.passRespDom=function(respDom){
+				
 			}
 			this.processResponse=function(studentUuid,ans){
 

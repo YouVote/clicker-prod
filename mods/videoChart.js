@@ -433,20 +433,18 @@ define(['ctype'], function(ctype){
 				// webEngineReadyCallback();
 			});
 
-			function update(newData){
-
-
+			// function update(newData){}
+			// this.responseInput=function(){
+			// 	var optDiv=document.createElement("div");
+			// 	return optDiv;
+			// }
+			// this.responseDom=function(){
+			// 	return respDom;
+			// }
+			this.passInputDom=function(inputDom){
 			}
-			this.responseInput=function(){
-				var optDiv=document.createElement("div");
-				var inputDoms;
-				require([],function(){
-
-			    })
-				return optDiv;
-			}
-			this.responseDom=function(){
-				return respDom;
+			this.passRespDom=function(respDomNew){
+				$(respDomNew).html(respDom);
 			}
 			this.processResponse=function(studentUuid,ans){
 				require([`d3js`],function( d3) {

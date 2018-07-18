@@ -222,7 +222,9 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 		},
 		webEngine:function(params){ // may change this to coreParams, sideWebParams
 			var webObj=this;
-			var responseDom=document.createElement("div")
+			// var responseDom=document.createElement("div"); 
+			// $responseDom=$('<div></div>');
+			// $responseDom.css('float','left');
 			// consider pulling out analysis engine into a class of its own
 			// possibly in clicker-prod/analysis/main.js
 			// var analysisObj=null; var analysisKivQueue=[];
@@ -247,12 +249,12 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 			params.side=widgetParams;
 			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
 				analysisObjTemp=new analysis.engine(params.core,params.side["analysisParams"]);
-				$(responseDom).html(analysisObjTemp.dom())
+				// $(responseDom).html(analysisObjTemp.passDom())
 				analysisObj.__reinstate__(analysisObjTemp);
 			})
 			// var opt=params.options;
 			var mcqOpts=params.core;
-			var widletObj; this.widBody=document.createElement("div");
+			var widletObj; widBody=document.createElement("div");
 			var data=new Array(mcqOpts.length).fill(0);
 			require(["vue"],function(Vue){
 				var opt={
@@ -264,7 +266,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 					}
 				}
 				widletObj=new Vue({
-					el:webObj.widBody,
+					el:widBody,
 					template:'\
 					<div class="form-group btn-group-vertical btn-block justify-content-end">\
 					<label v-for="(opt,i) in options"class="form-check-label btn btn-default radio-inline"><input name="a" v-bind:value="i" type="radio" class="form-check-input" v-model="choice" v-bind:disabled="disabled"> \
@@ -302,12 +304,18 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 				return widHead;
 			}
 
-			this.responseInput=function(){
-				return this.widBody;
-			}
+			// this.responseInput=function(dom){
+			// 	return this.widBody;
+			// }
 
-			this.responseDom=function(){
-				return responseDom;
+			// this.responseDom=function(dom){ // should responseDomObj, to extract height and width from. 
+			// 	return responseDom;
+			// }
+			this.passInputDom=function(inputDom){
+				$(inputDom).html(widBody);
+			}
+			this.passRespDom=function(respDom){
+				analysisObj.passDom(respDom)
 			}
 			this.processResponse=function(studentUuid,ans){
 				// called by yvWebKernel/questionHandler.js
@@ -315,7 +323,10 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 				data[ans]++;
 				analysisObj.update(data);
 			}
+
+			// called by yvWebKernel when window resize. 
 			this.updateRespDim=function(height,width){
+				// console.log("updating Resp Dim")
 				analysisObj.updateDim(height,width);
 			}
 		}

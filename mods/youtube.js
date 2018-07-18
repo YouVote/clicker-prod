@@ -84,17 +84,17 @@ define(["ctype"], function(ctype){
 				var widHead='';
 				return widHead;
 			}
-
-			// this.widBody=function(){
+			// this.responseInput=function(){
+			// 	return inputDom;
+			// }
+			// this.responseDom=function(){
 			// 	return widBody;
 			// }
-
-			this.responseInput=function(){
-				return inputDom;
+			this.passInputDom=function(inputDom){
+				
 			}
-
-			this.responseDom=function(){
-				return widBody;
+			this.passRespDom=function(respDom){
+				$(respDom).html(widBody);
 			}
 			this.processResponse=function(studentUuid,ans){
 				data[ans]++;

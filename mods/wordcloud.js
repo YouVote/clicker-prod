@@ -22,50 +22,52 @@ define(["async"], function(AsyncProxy){
 		webEngine:function(){
 			var appObj=document.createElement("input");
 			appObj.style.width="100%";
-			var respDom = document.createElement("div");
+			// var respDom = document.createElement("div");
 			var wordlist={};
 			var wordCloudObj=new AsyncProxy();
-			// todo: refactor all this and pull out the arbitrary parameters. 
-			requirejs.config({
-				paths: {
-					cloud: "https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min"
-				}
-			});
-			require(["d3js","cloud"],function(d3,cloud){
-				wordCloudObjTemp=new (function(respDom){
-					var color = d3.scaleLinear()
-						.domain([0,1,2,3,4,5,6,10,15,20,100])
-						.range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", 
-							"#777", "#666", "#555", "#444", "#333", "#222"]);
-					svgDom=d3.select(respDom).append("svg")
-						.attr("width", 600)
-						.attr("height", 350)
-						.attr("class", "wordcloud");
-					function draw(words){
-						svgDom.selectAll("*").remove();
-						svgDom.append("g")
-							.attr("transform", "translate(320,200)")
-							.selectAll("text")
-							.data(words)
-							.enter().append("text")
-							.style("font-size", function(d) { return d.size + "px"; })
-							.style("fill", function(d, i) { return color(i); })
-							.attr("transform", function(d) {
-								return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-							})
-							.text(function(d) { return d.text; });
+			function initRespDom(respDom){
+				// todo: refactor all this and pull out the arbitrary parameters. 
+				requirejs.config({
+					paths: {
+						cloud: "https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min"
 					}
-					this.generateWordCloud=function(freqList){
-						cloud().size([600, 300])
-							.words(freqList)
-							.rotate(0)
-							.fontSize(function(d) { return d.size; })
-							.on("end", draw)
-							.start();				
-					}
-				})(respDom)
-				wordCloudObj.__reinstate__(wordCloudObjTemp)
-			})
+				});
+				require(["d3js","cloud"],function(d3,cloud){
+					wordCloudObjTemp=new (function(respDom){
+						var color = d3.scaleLinear()
+							.domain([0,1,2,3,4,5,6,10,15,20,100])
+							.range(["#ddd", "#ccc", "#bbb", "#aaa", "#999", "#888", 
+								"#777", "#666", "#555", "#444", "#333", "#222"]);
+						svgDom=d3.select(respDom).append("svg")
+							.attr("width", 600)
+							.attr("height", 350)
+							.attr("class", "wordcloud");
+						function draw(words){
+							svgDom.selectAll("*").remove();
+							svgDom.append("g")
+								.attr("transform", "translate(320,200)")
+								.selectAll("text")
+								.data(words)
+								.enter().append("text")
+								.style("font-size", function(d) { return d.size + "px"; })
+								.style("fill", function(d, i) { return color(i); })
+								.attr("transform", function(d) {
+									return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+								})
+								.text(function(d) { return d.text; });
+						}
+						this.generateWordCloud=function(freqList){
+							cloud().size([600, 300])
+								.words(freqList)
+								.rotate(0)
+								.fontSize(function(d) { return d.size; })
+								.on("end", draw)
+								.start();				
+						}
+					})(respDom)
+					wordCloudObj.__reinstate__(wordCloudObjTemp)
+				})
+			}
 
 			function redraw(wordList){
 				// wordlist to frequency_list.
@@ -82,11 +84,17 @@ define(["async"], function(AsyncProxy){
 				}
 				wordCloudObj.generateWordCloud(freqlist);
 			}
-			this.responseInput=function(){
-				return appObj;
+			// this.responseInput=function(){
+			// 	return appObj;
+			// }
+			// this.responseDom=function(){
+			// 	return respDom;
+			// }
+			this.passInputDom=function(inputDom){
+				$(inputDom).html(appObj);
 			}
-			this.responseDom=function(){
-				return respDom;
+			this.passRespDom=function(respDom){
+				initRespDom(respDom);
 			}
 			this.processResponse=function(studentUuId,resp){
 				(resp in wordlist) ? wordlist[resp]++ : wordlist[resp]=1;

@@ -1,24 +1,17 @@
 define(["d3js"],function(d3){
 	var analysisParams={
-		axisStrokeWidth:3,
-		axisSpace:2, barSpace:5, //in percentage
-		barColor:'#7755ff',
-		barOffset:150
+		leftOffset:50, rightOffset:10,
+		topOffset:0, bottomOffset:20,
+		topChartPadding:20, bottomChartPadding:20,
+		spacingRatio:0.2,
+		chartColor:"#7755ff"
 	}
 	return {
-		author:function(){
-
-		},
 		engine:function(coreParams,sideParams){
-			// var opt=params.options, N=opt.length;
-			// var opt=params.core, N=opt.length;
-			var opt=coreParams, N=opt.length;
-			var pHeight=500, pWidth=600;
-			var dataBar,barScale;
-			
-			// if(typeof(params["analysisParams"])=="object"){
-			// for(paramName in params["analysisParams"]){
-			// analysisParams[paramName]=params["analysisParams"][paramName];
+		// three different types of parameters in this module - 
+		// 1. analysis params: can be set at the start, but does not change throughout session. expressed as AP.sth.
+		// 2. dynamic data: height, width, dataArray, and entriesArray. Changes through during session. 
+		// 3. derived params: depends on mixture of analysis params and dynamic data, expressed as function. 
 			if(typeof(sideParams)=="object"){
 				for(paramName in sideParams){
 					if(analysisParams[paramName]!=undefined){
@@ -26,64 +19,129 @@ define(["d3js"],function(d3){
 					}
 				}
 			}
+			// 1. analysis params:
+			var AP=analysisParams; // shorten name
 
-			var ap=analysisParams; // shorten name
-			var data=new Array(opt.length).fill(0);
+			// 2. dynamic data:
+			var entriesArray=coreParams; // does not change
+			var dataArray=new Array(entriesArray.length).fill(0); // changed by new responses
+			var height=400, width=600; // changed by setCanvasSize window
+
+			// 3. derived parameters - express as functions so that formulas used become clear. 
+			var N=function(){ // number of entries
+				return entriesArray.length;
+			}
+			var chartHeight=function(){ // area in canvas dedicated to chart (excludes axes)
+				return height-AP.topOffset-AP.bottomOffset;
+			}
+			var entryHeight=function(){ // distance between each entry
+				return (chartHeight()-AP.topChartPadding-AP.bottomChartPadding)/(N()-AP.spacingRatio);
+			}
+			var entriesPosArr=function(){ // y-positions of the entries axis points for input into entriesScale
+				var arr=[];
+				for(var i=0;i<N();i++)
+					arr.push(entryHeight()*(i+(1-AP.spacingRatio)/2)+AP.topChartPadding);
+				return arr;
+			}; 
+			var currDataAxisRange;
+			var dataAxisRange=function(){ // work out the range of data axis for input into dataScale
+				var maxRange=Math.max.apply(null, dataArray), order=0;
+				if(maxRange<2){
+					return 3;
+				}else{
+					while(maxRange>1){ order++; maxRange/=10; }
+					return (Math.ceil(maxRange*10)+1)*10**(order-1);
+				}
+			}
+			// d3 scales - converting index/data values into pixels.
+			var dataScale=function(){
+				return d3.scaleLinear()
+						.domain([0,dataAxisRange()])
+						.range([0,width-AP.leftOffset-AP.rightOffset]);
+			}
+			var entriesScale=function(){
+				return d3.scaleOrdinal()
+						.domain(entriesArray)
+						.range(entriesPosArr());
+			}
+			var dataAxisGen=function(){
+				return d3.axisBottom(dataScale()).ticks(5);
+			}
+			var entriesAxisGen=function(){
+				return d3.axisLeft().scale(entriesScale());
+			}
+
+			// initialize d3 objects
 			var respDom=document.createElement("div");
-
-			function draw(height,width){
-				var d3Obj, label, vAxis, yScale;
-				yScale=d3.scaleLinear()
-					.domain([-0.5,N-0.5])
-					.range([0,height]);
-				barScale=d3.scaleLinear()
-					.domain([0,20])
-					.range([0,width-ap.barOffset])
-				d3Obj=d3.select(respDom).append("svg")
-					.attr('height',height).attr('width',width)
-				label=d3Obj.selectAll("text.graphLabels").data(opt).enter().append("text")
-					.attr("class","graphLabels")
-				vAxis=d3Obj.selectAll("line.axisLine").data(opt).enter().append("line")
-					.attr("class","axisLine")
-				dataBar=d3Obj.selectAll("rect").data(opt).enter().append('rect')
-					.style('fill',ap.barColor)
-					.attr('x',ap.barOffset+ap.axisStrokeWidth/2)
-					.attr('y',function(d,i){
-						return yScale(-0.5+i+0.01*ap.barSpace);
-					})
-					.attr('height',yScale(0.5-0.02*ap.barSpace))
-				label.data(opt)
-					.attr("dominant-baseline", "central").attr("text-anchor","end")
-					.attr("dx","-10").attr("font-size",15)
-					.attr("x",ap.barOffset)
-					.attr("y",function(d,i){return yScale(i);})
-					.html(function(d){return d;})
-				vAxis.data(opt)
-					.attr("x1",ap.barOffset).attr("x2",ap.barOffset)
-					.attr("stroke-width",ap.axisStrokeWidth).attr("stroke","#333")
-					.attr("y1",function(d,i){
-						return yScale(i-0.5+0.01*ap.axisSpace);
-					})
-					.attr("y2",function(d,i){
-						return yScale(i+0.5-0.01*ap.axisSpace);
-				 	})
+			// an object belongs here somewhere. 
+			function initRespDom(respDom){
 			}
-			draw(pHeight,pWidth);
+			var canvas=d3.select(respDom).append("svg");
+			// var svg=document.createElement("svg");
+			// var canvas=d3.select(svg);
+			var bar=canvas.append("g");
+			bar.selectAll("rect").data(dataArray)
+				.enter().append("rect")
+				.attr("fill",AP.chartColor)
+				.exit().remove();
+			var dataAxis=canvas.append("g");
+			var entriesAxis=canvas.append("g");
+			var entriesLine=canvas.append("line");
+			entriesLine
+				.attr("stroke","black")
+				.attr("stroke-width","1");
 
-			this.dom=function(){
-				return respDom;
+			// main barchart functions. 
+			var setCanvasSize=function(newHeight=400,newWidth=600){
+				// dom height and width may not be wellformed - test this to prevent errors.
+				if(!isNaN(newHeight) && !isNaN(newWidth)){
+					// height and width is now updated and will affect all the other functions 
+					height=newHeight; width=newWidth;
+				}
+				canvas.attr("height",height).attr("width",width);
+			}
+			var redrawBarChart=function(transDur=0){ 
+				bar.attr("transform","translate("+AP.leftOffset+","+AP.topOffset+AP.topChartPadding+")")
+					.selectAll("rect").data(dataArray)
+					.attr("height",entryHeight()*(1-AP.spacingRatio))
+					.attr("y",function(d,i){return i*entryHeight();}) 
+					.transition(d3.transition().duration(transDur))
+					.attr("width",function(d){return dataScale()(d);})
+			}
+			var redrawDataAxis=function(transDur=0){
+				dataAxis.attr("transform","translate("+AP.leftOffset+","+(AP.topOffset+chartHeight())+")")
+					.transition(d3.transition().duration(transDur))
+					.call(dataAxisGen())
+			}
+			var redrawEntriesAxis=function(){
+				entriesAxis.attr("transform","translate("+(AP.leftOffset-1)+","+AP.topOffset+")")
+					.call(entriesAxisGen())
+				entriesLine
+					.attr("x1", AP.leftOffset)
+					.attr("y1", AP.topOffset)
+					.attr("x2", AP.leftOffset)
+					.attr("y2", AP.topOffset+chartHeight());
 			}
 
-			this.update=function(newData){
-				data=newData;
-				dataBar
-					.data(newData)
-					.attr('width',function(d,i){
-						return barScale(d);
-					})
+			this.passDom=function(dom){
+				$(dom).html(respDom)
+				// minus to account for padding and prevent unbounded growth.
+				// Todo: work out a systematic way to incorporate this mechanism
+				setCanvasSize($(dom).height()-50,$(dom).width()-50);
+				redrawBarChart();
+				redrawEntriesAxis();
+				redrawDataAxis();
+				// return respDom;
 			}
-			this.updateDim=function(height,width){
-				draw(height,width)
+
+			this.update=function(newDataArray){ 
+				// dataArray is now updated and will affect all the other functions 
+				dataArray=newDataArray;
+				if(currDataAxisRange!=dataAxisRange()){
+					redrawDataAxis(500);
+					currDataAxisRange=dataAxisRange();
+				}
+				redrawBarChart(200);
 			}
 		}
 	}
