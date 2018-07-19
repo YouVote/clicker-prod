@@ -307,7 +307,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 			// this.responseInput=function(dom){
 			// 	return this.widBody;
 			// }
-
 			// this.responseDom=function(dom){ // should responseDomObj, to extract height and width from. 
 			// 	return responseDom;
 			// }

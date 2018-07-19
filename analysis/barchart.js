@@ -94,7 +94,7 @@ define(["d3js"],function(d3){
 			entriesLine
 				.attr("stroke","black")
 				.attr("stroke-width","1");
-
+				
 			// main barchart functions. 
 			var setCanvasSize=function(newHeight=400,newWidth=600){
 				// dom height and width may not be wellformed - test this to prevent errors.
@@ -143,7 +143,6 @@ define(["d3js"],function(d3){
 				redrawDataAxis();
 				// return respDom;
 			}
-
 			this.update=function(newDataArray){ 
 				// dataArray is now updated and will affect all the other functions 
 				dataArray=newDataArray;
