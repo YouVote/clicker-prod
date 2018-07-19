@@ -1,7 +1,7 @@
 define(["d3js"],function(d3){
 	var analysisParams={
-		leftOffset:50, rightOffset:10,
-		topOffset:0, bottomOffset:20,
+		leftOffset:100, rightOffset:50,
+		topOffset:0, bottomOffset:50,
 		topChartPadding:20, bottomChartPadding:20,
 		spacingRatio:0.2,
 		barFill:"#aa88ff",
@@ -75,7 +75,6 @@ define(["d3js"],function(d3){
 
 			// initialize d3 objects
 			var respDom=document.createElement("div");
-			$(respDom).css("float","left")
 			// an object belongs here somewhere. 
 			function initRespDom(respDom){
 			}
@@ -103,6 +102,9 @@ define(["d3js"],function(d3){
 					// height and width is now updated and will affect all the other functions 
 					height=newHeight; width=newWidth;
 				}
+				// set min height. todo: work out min height necessary to prevent errors from negative rectangle heights. 
+				height=(height<100 ? 100:height);width=(width<100 ? 100:width);
+				$(respDom).css("height",height); $(respDom).css("width",width);
 				canvas.attr("height",height).attr("width",width);
 			}
 			var redrawBarChart=function(transDur=0){ 
