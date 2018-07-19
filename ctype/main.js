@@ -38,11 +38,15 @@ define([],function(){
 				params.mathjax=contRep.mathjax;
 			}
 		}
-		this.putInto=function(div){
-			div.innerHTML=data;
+		this.putInto=function(div){ 
+			// div may be 
+			// 1) a jQuery object, 
+			// 2) a DOM object, or 
+			// 3) a css selector string. 
+			$(div).html(data)
 			if(params.mathjax==true){
 				require(["mathjax"],function(mj){
-					mj.Hub.Queue(["Typeset",mj.Hub,div])
+					mj.Hub.Queue(["Typeset",mj.Hub,$(div).get(0)])
 				})
 			}
 		}
