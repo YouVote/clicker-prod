@@ -4,7 +4,9 @@ define(["d3js"],function(d3){
 		topOffset:0, bottomOffset:20,
 		topChartPadding:20, bottomChartPadding:20,
 		spacingRatio:0.2,
-		chartColor:"#7755ff"
+		barFill:"#aa88ff",
+		barStroke:"#4422cc",
+		barStrokeWidth:1
 	}
 	return {
 		engine:function(coreParams,sideParams){
@@ -46,8 +48,8 @@ define(["d3js"],function(d3){
 			var currDataAxisRange;
 			var dataAxisRange=function(){ // work out the range of data axis for input into dataScale
 				var maxRange=Math.max.apply(null, dataArray), order=0;
-				if(maxRange<2){
-					return 3;
+				if(maxRange<5){
+					return 6;
 				}else{
 					while(maxRange>1){ order++; maxRange/=10; }
 					return (Math.ceil(maxRange*10)+1)*10**(order-1);
@@ -73,6 +75,7 @@ define(["d3js"],function(d3){
 
 			// initialize d3 objects
 			var respDom=document.createElement("div");
+			$(respDom).css("float","left")
 			// an object belongs here somewhere. 
 			function initRespDom(respDom){
 			}
@@ -82,7 +85,9 @@ define(["d3js"],function(d3){
 			var bar=canvas.append("g");
 			bar.selectAll("rect").data(dataArray)
 				.enter().append("rect")
-				.attr("fill",AP.chartColor)
+				.attr("fill",AP.barFill)
+				.attr("stroke-width",AP.barStrokeWidth)
+				.attr("stroke",AP.barStroke)
 				.exit().remove();
 			var dataAxis=canvas.append("g");
 			var entriesAxis=canvas.append("g");
@@ -127,7 +132,10 @@ define(["d3js"],function(d3){
 				$(dom).html(respDom)
 				// minus to account for padding and prevent unbounded growth.
 				// Todo: work out a systematic way to incorporate this mechanism
-				setCanvasSize($(dom).height()-50,$(dom).width()-50);
+				setCanvasSize(
+					$(dom).height()-(parseInt($(dom).css('padding-left'))+parseInt($(dom).css('padding-right'))),
+					$(dom).width()-(parseInt($(dom).css('padding-top'))+parseInt($(dom).css('padding-bottom')))
+				);
 				redrawBarChart();
 				redrawEntriesAxis();
 				redrawDataAxis();
