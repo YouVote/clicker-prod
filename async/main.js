@@ -2,8 +2,9 @@
 // newly implemented to refactor common patterns for addressing
 // asynchronous loading issues. Take note of limitations. 
 define([],function(){
-	return function(){
-		var anoitedObj=null;
+	// pass identifier of class it is serving here, for purposes of providing debug info. 
+	return function(className="_untitled_"){ 
+		var anointedObj=null;
 		var kivObj=new (function(){
 			var kivQueue=[];
 			this.pushKiv=function(method,args){
@@ -16,7 +17,7 @@ define([],function(){
 		})();
 		var proxy=new Proxy(kivObj,{
 			get:function(kiv,method){
-				if(anoitedObj==null){
+				if(anointedObj==null){
 					if(method=="__reinstate__"){
 						return function(newObj){
 							while(kivItem=kiv.popQueue()){
@@ -24,7 +25,7 @@ define([],function(){
 								var args=kivItem.args;
 								fn.apply(null,args);
 							}
-							anoitedObj=newObj;
+							anointedObj=newObj;
 						}
 					}else{
 						return function(...val) {
@@ -34,9 +35,12 @@ define([],function(){
 					}
 				}else{
 					return function(...val){
-						var fn=anoitedObj[method];
-						var args=val;
-						return fn.apply(null,args);
+						var fn=anointedObj[method];
+						if(fn!=undefined){
+							return fn.apply(null,val);
+						}else{
+							console.warn("Method "+method+" does not exist in "+className+" class. Method call is ignored by AsyncProxy.")
+						}
 					}
 				}
 

@@ -1,9 +1,13 @@
 define(["async"], function(AsyncProxy){
+	var widgetParams={
+		"analysis":"pilechart",
+		"analysisParams":null
+	}
 	return{
 		author:function(){
 			this.coreTemplate='\"\"';
 		},
-		appEngine:function(){
+		appEngine:function(params){
 			var appObj=document.createElement("input");
 			appObj.style.width="100%";
 			appObj.type="number";
@@ -20,50 +24,50 @@ define(["async"], function(AsyncProxy){
 				appObj.disabled=true;
 			}
 		},
-		webEngine:function(){
+		webEngine:function(params){
 			// include d3 in here
 			var appObj=document.createElement("input");
 			appObj.style.width="100%";
 			appObj.type="number";
 			var numlist={};
-			var analysisObj=new AsyncProxy();
-			// var respDom=document.createElement("div");
-			function initRespDom(respDom){
-				require(["d3js"],function(d3){
-					analysisObjTemp=new(function(respDom){
-						var svg=d3.select(respDom).append("svg")
-							.attr("width",500).attr("height",500)
-						var plot;
-						this.generatePlot=function(freqList){
-							plot=svg.selectAll("circle")
-								.data(freqList)
-								.enter()
-									.append("circle")
+			var analysisObj;
 
-						}
-						// try to do an addEntry instead. 
-						this.addEntry=function(num){
-							
-						}
-					})(respDom)
-					analysisObj.__reinstate__(analysisObjTemp)
-				})
+			var yvProdBaseAddr=params.system.yvProdBaseAddr;
+			// loop over side params, replace widgetParams.
+			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
+				var _params={};
+				_params.core=params;
+				params = _params;
 			}
-			// this.responseInput=function(){
-			// 	return appObj;
-			// }
-			// this.responseDom=function(){
-			// 	return respDom;
-			// }
+
+			if(typeof(params["side"])=="object"){
+				for(paramName in params["side"]){
+					if(widgetParams[paramName]!=undefined){
+						widgetParams[paramName]=params["side"][paramName];
+					}
+				}
+			}
+			params.side=widgetParams;
+			
+			var analysisObj=new AsyncProxy(widgetParams['analysis']);
+			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
+				analysisObjTemp=new analysis.engine(params.core,params.side["analysisParams"]);
+				analysisObj.__reinstate__(analysisObjTemp);
+			})
+
 			this.passInputDom=function(inputDom){
 				$(inputDom).html(appObj);
 			}
 			this.passRespDom=function(respDom){
-				initRespDom(respDom);
+				// this is like an init
+				analysisObj.passDom(respDom);
+			}
+			this.updateRespDim=function(height,width){
+				analysisObj.updateDim(height,width)
 			}
 			this.processResponse=function(studentUuId,resp){
 				(resp in numlist) ? numlist[resp]++ : numlist[resp]=1;
-				analysisObj.generatePlot(numlist);
+				analysisObj.update(numlist);
 			}
 		}
 	}

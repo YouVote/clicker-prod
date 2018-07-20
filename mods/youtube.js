@@ -76,8 +76,6 @@ define(["ctype"], function(ctype){
 			var youtubeId=params.core;
 			var widBody=document.createElement("iframe");
 				widBody.src="https://www.youtube.com/embed/"+youtubeId;
-				widBody.width="100%";
-				widBody.height="100%";
 				widBody.allowFullScreen=true;
 
 			this.widHead=function(){
@@ -101,7 +99,8 @@ define(["ctype"], function(ctype){
 				return analysisObj.update(data);
 			}
 			this.updateRespDim=function(height,width){
-				analysisObj.updateDim(height,width);
+				widBody.width=width;
+				widBody.height=height;
 			}
 		}
 	}

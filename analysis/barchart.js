@@ -134,13 +134,6 @@ define(["d3js"],function(d3){
 				$(dom).html(respDom)
 				// minus to account for padding and prevent unbounded growth.
 				// Todo: work out a systematic way to incorporate this mechanism
-				setCanvasSize(
-					$(dom).height()-(parseInt($(dom).css('padding-left'))+parseInt($(dom).css('padding-right'))),
-					$(dom).width()-(parseInt($(dom).css('padding-top'))+parseInt($(dom).css('padding-bottom')))
-				);
-				redrawBarChart();
-				redrawEntriesAxis();
-				redrawDataAxis();
 				// return respDom;
 			}
 			this.update=function(newDataArray){ 
@@ -151,6 +144,12 @@ define(["d3js"],function(d3){
 					currDataAxisRange=dataAxisRange();
 				}
 				redrawBarChart(200);
+			}
+			this.updateDim=function(height,width){
+				setCanvasSize(height,width);
+				redrawBarChart();
+				redrawEntriesAxis();
+				redrawDataAxis();
 			}
 		}
 	}

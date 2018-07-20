@@ -221,15 +221,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 			}
 		},
 		webEngine:function(params){ // may change this to coreParams, sideWebParams
-			var webObj=this;
-			// var responseDom=document.createElement("div"); 
-			// $responseDom=$('<div></div>');
-			// $responseDom.css('float','left');
-			// consider pulling out analysis engine into a class of its own
-			// possibly in clicker-prod/analysis/main.js
-			// var analysisObj=null; var analysisKivQueue=[];
-			var analysisObj=new AsyncProxy();
-
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
 			// loop over side params, replace widgetParams.
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
@@ -245,8 +236,9 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 					}
 				}
 			}
-
 			params.side=widgetParams;
+			
+			var analysisObj=new AsyncProxy(widgetParams['analysis']);
 			require([yvProdBaseAddr+"/analysis/"+widgetParams['analysis']+".js"],function(analysis){
 				analysisObjTemp=new analysis.engine(params.core,params.side["analysisParams"]);
 				// $(responseDom).html(analysisObjTemp.passDom())
@@ -325,7 +317,6 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 
 			// called by yvWebKernel when window resize. 
 			this.updateRespDim=function(height,width){
-				// console.log("updating Resp Dim")
 				analysisObj.updateDim(height,width);
 			}
 		}
