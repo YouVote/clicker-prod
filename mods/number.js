@@ -29,7 +29,8 @@ define(["async"], function(AsyncProxy){
 			var appObj=document.createElement("input");
 			appObj.style.width="100%";
 			appObj.type="number";
-			var numlist={};
+			// var numlist={};
+			// var numlist=[];
 			var analysisObj;
 
 			var yvProdBaseAddr=params.system.yvProdBaseAddr;
@@ -37,7 +38,7 @@ define(["async"], function(AsyncProxy){
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
 				var _params={};
 				_params.core=params;
-				params = _params;
+				params=_params;
 			}
 
 			if(typeof(params["side"])=="object"){
@@ -66,8 +67,11 @@ define(["async"], function(AsyncProxy){
 				analysisObj.updateDim(height,width)
 			}
 			this.processResponse=function(studentUuId,resp){
-				(resp in numlist) ? numlist[resp]++ : numlist[resp]=1;
-				analysisObj.update(numlist);
+				// numlist.push(resp);
+				// numlist.sort();
+				// pilechart.update() just needs the latest number, 
+				// not the entire data. Todo: figure out a standard to this.  
+				analysisObj.update(resp);
 			}
 		}
 	}
