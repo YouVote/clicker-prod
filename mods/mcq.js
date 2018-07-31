@@ -158,7 +158,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 				params = newParams;
 			}
 			var mcqOpts=params.core;
-			require(["vue"],function(Vue){
+			require(["vue"],function(Vue){ 
 				var opt={
 					template:'<div ref="content"></div>',
 					props:["optData"],
@@ -231,7 +231,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 
 			if(typeof(params["side"])=="object"){
 				for(paramName in params["side"]){
-					if(widgetParams[paramName]!=undefined){
+					if(paramName in widgetParams){
 						widgetParams[paramName]=params["side"][paramName];
 					}
 				}
@@ -249,6 +249,8 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 			var widletObj; widBody=document.createElement("div");
 			var data=new Array(mcqOpts.length).fill(0);
 			require(["vue"],function(Vue){
+			// require vue should be placed right at the top because will definitely need it
+			// use asyncproxy for stuff you are not sure of needing e.g. the choice of chart (barchart). 
 				var opt={
 					template:'<div ref="content"></div>',
 					props:["optData"],
@@ -317,6 +319,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal (origina
 
 			// called by yvWebKernel when window resize. 
 			this.updateRespDim=function(height,width){
+				// console.log("mcq updateRespDim")
 				analysisObj.updateDim(height,width);
 			}
 		}

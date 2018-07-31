@@ -1,4 +1,4 @@
-define(["d3js"],function(d3){
+define(["d3js"],function(d3){ // the archetypal chart for mcq
 	var analysisParams={
 		leftOffset:100, rightOffset:50,
 		topOffset:0, bottomOffset:50,
@@ -16,7 +16,7 @@ define(["d3js"],function(d3){
 		// 3. derived params: depends on mixture of analysis params and dynamic data, expressed as function. 
 			if(typeof(sideParams)=="object"){
 				for(paramName in sideParams){
-					if(analysisParams[paramName]!=undefined){
+					if(paramName in analysisParams){
 						analysisParams[paramName]=sideParams[paramName];
 					}
 				}
@@ -103,7 +103,7 @@ define(["d3js"],function(d3){
 					height=newHeight; width=newWidth;
 				}
 				// set min height. todo: work out min height necessary to prevent errors from negative rectangle heights. 
-				height=(height<100 ? 100:height);width=(width<100 ? 100:width);
+				height=(height<100 ? 100:height); width=(width<100 ? 100:width);
 				$(respDom).css("height",height); $(respDom).css("width",width);
 				canvas.attr("height",height).attr("width",width);
 			}
@@ -131,6 +131,7 @@ define(["d3js"],function(d3){
 			}
 
 			this.passDom=function(dom){
+				// console.log("bar pass dom")
 				$(dom).html(respDom)
 				// minus to account for padding and prevent unbounded growth.
 				// Todo: work out a systematic way to incorporate this mechanism
@@ -146,6 +147,7 @@ define(["d3js"],function(d3){
 				redrawBarChart(200);
 			}
 			this.updateDim=function(height,width){
+				// console.log("bar update dim, h:" +height+", w:"+width)
 				setCanvasSize(height,width);
 				redrawBarChart();
 				redrawEntriesAxis();
