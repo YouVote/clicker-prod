@@ -2,11 +2,12 @@ define([],function(){
 	return function modules(){
 		this.availableMods=[
 			"mcq",
-			"picture",
 			"number",
+			"picture",
+			"video",
 			"wordcloud",
 			"youtube",
-			"video"
+			"instruct"
 		]
 	}
 });
