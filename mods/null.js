@@ -1,9 +1,7 @@
 define([], function(){
 	return {
-		authEngine:function(){
-			this.templateParams=function(){
-				return '{}'
-			}
+		author:function(){
+			this.coreTemplate='""';
 		},
 		appEngine:function(params){
 			var optDiv=document.createElement("div");
