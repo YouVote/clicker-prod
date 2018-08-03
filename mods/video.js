@@ -257,6 +257,9 @@ define(['d3js','jquery'],function(d3){ // the archetypal sync module.
 					analysisObj.logsig(studentUuid,data.resState);
 				}
 			}
+			this.updateRespDim=function(height,width){
+				
+			}
 		}
 	}
 })

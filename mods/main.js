@@ -3,12 +3,10 @@ define([],function(){
 		this.availableMods=[
 			"mcq",
 			"picture",
-			"textinput",
 			"number",
 			"wordcloud",
 			"youtube",
-			"video",
-			"videoChart",
+			"video"
 		]
 	}
 });

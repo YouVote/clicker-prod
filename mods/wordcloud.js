@@ -100,6 +100,9 @@ define(["async"], function(AsyncProxy){
 				(resp in wordlist) ? wordlist[resp]++ : wordlist[resp]=1;
 				redraw(wordlist);
 			}
+			this.updateRespDim=function(height,width){
+				
+			}
 		}
 	}
 });
