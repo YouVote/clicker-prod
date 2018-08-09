@@ -98,19 +98,28 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 			}
 		},
 		webEngine:function(params){
+			// loop over side params, replace widgetParams.
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
-				var newParams={};
-				newParams.core=params;
-				params = newParams;
+				var _params={};
+				_params.core=params;
+				params = _params;
 			}
+
+			if(typeof(params["side"])=="object"){
+				for(paramName in params["side"]){
+					if(paramName in widgetParams){
+						widgetParams[paramName]=params["side"][paramName];
+					}
+				}
+			}
+			params.side=widgetParams;
+			
 			var url=params.core;
 
-			// var pictObj=null;
-			// var pictKivQueue=[];
 			var pictObj=new AsyncProxy();
-			
+			// getting image dimensions. 
+			// https://stackoverflow.com/questions/5633264/javascript-get-image-dimensions
 			var studentResponses=[];
-			// var respDom=document.createElement("div");
 			// side params
 			var pHeight=600,pWidth=600;
 			var pMargin={top:10,bottom:10,left:30,right:10};
@@ -145,15 +154,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 					pictObj.__reinstate__(pictObjTemp)
 				});
 			}
-			// this.responseInput=function(){
-			// 	var optDiv=document.createElement("div");
-			// 	return optDiv;
-			// }
-			// this.responseDom=function(){
-			// 	return respDom;
-			// }
-			this.passInputDom=function(inputDom){
-			}
+			this.passInputDom=function(inputDom){}
 			this.passRespDom=function(respDom){
 				initRespDom(respDom);
 			}
