@@ -1,4 +1,5 @@
 define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async module.
+	var widgetParams={}
 	return {
 		author:function(){
 			// this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
@@ -113,57 +114,135 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 				}
 			}
 			params.side=widgetParams;
-			
-			var url=params.core;
 
-			var pictObj=new AsyncProxy();
+			var pHeight=500,pWidth=600;
+			var url=params.core;
+			var img=new Image(); img.src=url; 
+			var imgHeight=0, imgWidth=0, imgRatio=0;
+			img.onload=function(){
+				imgHeight=img.height;
+				imgWidth=img.width;
+				imgRatio=imgHeight/imgWidth;
+			}
+
+			var pictObj=new AsyncProxy("picture");
+			require(["d3js"],function(d3){
+				pictObjTemp=new (function(){
+					var pictDom=document.createElement("div");
+					var canvas=d3.select(pictDom).append('svg')
+					var imgObj=canvas.append('image')
+							.attr('xlink:href', url)
+					var respHeight=0, respWidth=0, dimRatio=0;
+					var dataArr=[];
+					this.passRespDom=function(respDom){
+						// too many div in div, but just use this for now. 
+						$(respDom).html(pictDom);
+					}
+					this.updateRespDim=function(height,width){
+						dimRatio=height/width;
+						if(dimRatio>imgRatio){
+							respWidth=width;
+							respHeight=width*imgRatio;
+						}else{
+							respHeight=height;
+							respWidth=height/imgRatio;
+						}
+						canvas
+							.attr('height', respHeight)
+							.attr('width', respWidth)
+						imgObj
+							.attr('height', respHeight)
+							.attr('width', respWidth)
+							.attr('preserveAspectRatio', 'none')
+
+						// may want to refactor this with updateData
+						canvas.selectAll('ellipse')
+							.data(dataArr)
+							.attr('cx',function(d){
+								return d.x*(respWidth/300); // 300 width is from app
+							})
+							.attr('cy',function(d){
+								return (300-d.y)*(respHeight/300); // 300 height is from app
+							})
+							.attr('rx',function(){
+								return 4*(respWidth/300); // 4 is radius from app
+							})
+							.attr('ry',function(){
+								return 4*(respHeight/300); // 4 is radius from app
+							})
+					}
+					this.updateData=function(newDataArr){
+						dataArr=newDataArr;
+						canvas.selectAll('ellipse')
+							.data(dataArr).enter()
+							.append('ellipse')
+							.attr('cx',function(d){
+								return d.x*(respWidth/300); // 300 width is from app
+							})
+							.attr('cy',function(d){
+								return (300-d.y)*(respHeight/300); // 300 height is from app
+							})
+							.attr('rx',function(){
+								return 4*(respWidth/300); // 4 is radius from app
+							})
+							.attr('ry',function(){
+								return 4*(respHeight/300); // 4 is radius from app
+							})
+							.attr("fill","red")
+					}
+				})
+				pictObj.__reinstate__(pictObjTemp);
+			});
+			
 			// getting image dimensions. 
 			// https://stackoverflow.com/questions/5633264/javascript-get-image-dimensions
 			var studentResponses=[];
 			// side params
-			var pHeight=600,pWidth=600;
-			var pMargin={top:10,bottom:10,left:30,right:10};
-			function initRespDom(respDom){
-				require(["d3js"],function(d3){
-					pictObjTemp=new (function(){
-						var d3Obj=d3.select(respDom).append(`svg`)
-							.attr('height',pHeight).attr('width',pWidth)
-						d3Obj.append('g')
-							.append('image')
-							.attr('xlink:href', url)
-							.attr('width', '100%')
-							.attr('height', '100%')
-							.attr('preserveAspectRatio', 'none')
-
-						this.update=function(data){
-							d3Obj.selectAll("circle")  // For new circle, go through the update process
-								.data(data)
-								.enter()
-								.append("circle")
-								.attr("cx", function(d,i) {
-									return (d.x*(pWidth/300));
-								}) 
-								.attr('cy', function(d,i) {
-									// formula for scaling from axis to svg
-									return pHeight-(d.y*(pHeight/300));
-								})
-								.attr('r', 8)
-								.attr("fill","red")
-						}	
-					})();
-					pictObj.__reinstate__(pictObjTemp)
-				});
-			}
+			// var pHeight=600,pWidth=600;
+			// var pMargin={top:10,bottom:10,left:30,right:10};
+			// function initRespDom(respDom){
+			// 	require(["d3js"],function(d3){
+			// 		pictObjTemp=new (function(){
+			// 			var d3Obj=d3.select(respDom).append(`svg`)
+			// 				.attr('height',pHeight).attr('width',pWidth)
+			// 			d3Obj.append('g')
+			// 				.append('image')
+			// 				.attr('xlink:href', url)
+			// 				.attr('width', '100%')
+			// 				.attr('height', '100%')
+			// 				.attr('preserveAspectRatio', 'none')
+			// 			this.update=function(data){
+			// 				d3Obj.selectAll("circle")  // For new circle, go through the update process
+			// 					.data(data)
+			// 					.enter()
+			// 					.append("circle")
+			// 					.attr("cx", function(d,i) {
+			// 						return (d.x*(pWidth/300));
+			// 					}) 
+			// 					.attr('cy', function(d,i) {
+			// 						// formula for scaling from axis to svg
+			// 						return pHeight-(d.y*(pHeight/300));
+			// 					})
+			// 					.attr('r', 8)
+			// 					.attr("fill","red")
+			// 			}	
+			// 		})();
+			// 		pictObj.__reinstate__(pictObjTemp)
+			// 	});
+			// }
 			this.passInputDom=function(inputDom){}
 			this.passRespDom=function(respDom){
-				initRespDom(respDom);
+				pictObj.passRespDom(respDom)
 			}
 			this.processResponse=function(studentUuid,ans){
-				studentResponses.push(ans);
-				pictObj.update(ans);
+				// some problem with app.getAns that returns ans as 
+				// an array of a single object, but I dont want to deal with that now. 
+				// so just taking the short cut. 
+				studentResponses.push(ans[0]);
+				pictObj.updateData(studentResponses);
 			}
 			this.updateRespDim=function(height,width){
-
+				pictObj.updateRespDim(height,width)
 			}
 		}
 	}
