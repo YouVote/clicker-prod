@@ -3,7 +3,7 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 	return {
 		author:function(){
 			// this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
-			this.coreTemplate='"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"';
+			this.coreTemplate='"https://mothership.sg/wp-content/uploads/2016/09/singapore_map.jpg"';
 		},
 
 		appEngine:function(params){
