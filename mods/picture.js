@@ -2,10 +2,8 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 	var widgetParams={}
 	return {
 		author:function(){
-			// this.coreTemplate='{"imgUrl":"https://i.ytimg.com/vi/eeR6PM5hCiM/maxresdefault.jpg"}';
 			this.coreTemplate='"https://mothership.sg/wp-content/uploads/2016/09/singapore_map.jpg"';
 		},
-
 		appEngine:function(params){
 			// this section affects the user interface
 			if(typeof(params)!="object" || typeof(params.core)=="undefined"){
@@ -194,42 +192,8 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 				pictObj.__reinstate__(pictObjTemp);
 			});
 			
-			// getting image dimensions. 
-			// https://stackoverflow.com/questions/5633264/javascript-get-image-dimensions
 			var studentResponses=[];
-			// side params
-			// var pHeight=600,pWidth=600;
-			// var pMargin={top:10,bottom:10,left:30,right:10};
-			// function initRespDom(respDom){
-			// 	require(["d3js"],function(d3){
-			// 		pictObjTemp=new (function(){
-			// 			var d3Obj=d3.select(respDom).append(`svg`)
-			// 				.attr('height',pHeight).attr('width',pWidth)
-			// 			d3Obj.append('g')
-			// 				.append('image')
-			// 				.attr('xlink:href', url)
-			// 				.attr('width', '100%')
-			// 				.attr('height', '100%')
-			// 				.attr('preserveAspectRatio', 'none')
-			// 			this.update=function(data){
-			// 				d3Obj.selectAll("circle")  // For new circle, go through the update process
-			// 					.data(data)
-			// 					.enter()
-			// 					.append("circle")
-			// 					.attr("cx", function(d,i) {
-			// 						return (d.x*(pWidth/300));
-			// 					}) 
-			// 					.attr('cy', function(d,i) {
-			// 						// formula for scaling from axis to svg
-			// 						return pHeight-(d.y*(pHeight/300));
-			// 					})
-			// 					.attr('r', 8)
-			// 					.attr("fill","red")
-			// 			}	
-			// 		})();
-			// 		pictObj.__reinstate__(pictObjTemp)
-			// 	});
-			// }
+
 			this.passInputDom=function(inputDom){}
 			this.passRespDom=function(respDom){
 				pictObj.passRespDom(respDom)
