@@ -113,10 +113,10 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 			}
 			params.side=widgetParams;
 
-			var pHeight=500,pWidth=600;
 			var url=params.core;
 			var img=new Image(); img.src=url; 
 			var imgHeight=0, imgWidth=0, imgRatio=0;
+			var paddingLeft=0;
 			img.onload=function(){
 				imgHeight=img.height;
 				imgWidth=img.width;
@@ -141,10 +141,13 @@ define(["async","ctype"], function(AsyncProxy,ctype){ // the archetypal async mo
 						if(dimRatio>imgRatio){
 							respWidth=width;
 							respHeight=width*imgRatio;
+							paddingLeft=0;
 						}else{
 							respHeight=height;
 							respWidth=height/imgRatio;
+							paddingLeft=(width-respWidth)/2
 						}
+						$(pictDom).css("padding-left",paddingLeft);
 						canvas
 							.attr('height', respHeight)
 							.attr('width', respWidth)
